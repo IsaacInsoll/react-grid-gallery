@@ -10,30 +10,6 @@ type NormalizedBuildLayoutOptions = BuildLayoutOptions & {
   margin: number;
 };
 
-const calculateCutOff = (
-  items: ImageExtended[],
-  totalRowWidth: number,
-  protrudingWidth: number,
-) => {
-  const cutOff: number[] = [];
-  let cutSum = 0;
-  items.forEach((item, index) => {
-    const fractionOfWidth = item.scaledWidth / totalRowWidth;
-    cutOff[index] = Math.floor(fractionOfWidth * protrudingWidth);
-    cutSum += cutOff[index];
-  });
-
-  let stillToCutOff = protrudingWidth - cutSum;
-  while (stillToCutOff > 0) {
-    for (const i of cutOff.keys()) {
-      cutOff[i]++;
-      stillToCutOff--;
-      if (stillToCutOff < 0) break;
-    }
-  }
-  return cutOff;
-};
-
 const getRow = <T extends Image = Image>(
   images: T[],
   { containerWidth, rowHeight, margin }: NormalizedBuildLayoutOptions,
@@ -59,14 +35,35 @@ const getRow = <T extends Image = Image>(
     totalRowWidth += extendedItem.scaledWidth + imgMargin;
   }
 
+  // Justify by rescaling the whole row to fit the container instead of
+  // horizontally cropping each image.
   const protrudingWidth = totalRowWidth - containerWidth;
   if (row.length > 0 && protrudingWidth > 0) {
-    const cutoff = calculateCutOff(row, totalRowWidth, protrudingWidth);
-    for (const i of row.keys()) {
-      const pixelsToRemove = cutoff[i];
-      const item = row[i];
-      item.marginLeft = -Math.abs(Math.floor(pixelsToRemove / 2));
-      item.viewportWidth = item.scaledWidth - pixelsToRemove;
+    const marginsWidth = row.length * imgMargin;
+    const availableWidth = containerWidth - marginsWidth;
+    const naturalWidth = totalRowWidth - marginsWidth;
+    const scale = availableWidth / naturalWidth;
+    const scaledRowHeight = Math.floor(rowHeight * scale);
+    let usedWidth = 0;
+
+    for (const item of row) {
+      item.scaledHeight = scaledRowHeight;
+      item.scaledWidth = Math.floor(item.scaledWidth * scale);
+      usedWidth += item.scaledWidth;
+    }
+
+    // Hand the flooring remainder back one pixel at a time so the row fills
+    // the container without overflowing and breaking flex-wrap alignment.
+    let leftover = availableWidth - usedWidth;
+    for (const item of row) {
+      if (leftover <= 0) break;
+      item.scaledWidth += 1;
+      leftover -= 1;
+    }
+
+    for (const item of row) {
+      item.viewportWidth = item.scaledWidth;
+      item.marginLeft = 0;
     }
   }
 
