@@ -69,7 +69,7 @@ const CustomThumbnail = (
   const { title, ...nativeImageProps } = imageProps;
 
   // @ts-expect-error React's special key is intentionally not a spreadable image prop.
-  const forbiddenKey: never = imageProps.key;
+  const forbiddenKey = imageProps.key;
 
   void [isSelectable, id, forbiddenKey];
   return <img {...nativeImageProps} title={title ?? undefined} />;
