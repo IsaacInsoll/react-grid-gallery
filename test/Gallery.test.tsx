@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
-import '@testing-library/jest-dom';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { renderToString } from 'react-dom/server';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Gallery } from '../src/Gallery';
 import { ThumbnailImageProps } from '../src/types';
 
@@ -32,12 +32,12 @@ const renderStatic = (element: ReactElement) =>
 
 describe('Gallery Component', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // define clientWidth for gallery root element
     Object.defineProperty(Element.prototype, 'clientWidth', { value: 400 });
     // @ts-ignore
-    Element.prototype.getBoundingClientRect = jest.fn(() => ({ width: 400 }));
+    Element.prototype.getBoundingClientRect = vi.fn(() => ({ width: 400 }));
   });
 
   it('should assign default id value', () => {
@@ -209,7 +209,7 @@ describe('Gallery Component', () => {
 
       render(<Gallery images={[image]} />);
 
-      expect(getItemViewport()).toHaveStyle(`background: url(${nano})`);
+      expect(getItemViewport().style.background).toContain(nano);
     });
 
     it('should not show overlay when gallery item is not hovered over', () => {
@@ -279,7 +279,7 @@ describe('Gallery Component', () => {
     });
 
     it('should call onSelect with index and image object arguments passed', () => {
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
 
       render(
         <Gallery

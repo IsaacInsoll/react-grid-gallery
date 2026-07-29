@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { thumbnail, tileViewport, getStyle } from '../src/styles';
 import { ImageExtended } from '../src';
 
