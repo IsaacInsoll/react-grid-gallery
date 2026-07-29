@@ -47,7 +47,7 @@ try {
     [
       'install',
       '--ignore-scripts',
-      '--offline',
+      '--prefer-offline',
       '--no-audit',
       '--no-fund',
       '--no-save',
