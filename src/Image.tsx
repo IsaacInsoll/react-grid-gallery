@@ -21,7 +21,6 @@ export const Image = <T extends ImageExtended>({
   const [hover, setHover] = useState(false);
 
   const thumbnailProps = {
-    key: index,
     'data-testid': 'grid-gallery-item_thumbnail',
     src: item.src,
     alt: item.alt ? item.alt : '',
@@ -29,7 +28,7 @@ export const Image = <T extends ImageExtended>({
     style: getStyle(thumbnailStyle, styles.thumbnail, styleContext),
   };
 
-  const { key: imageKey, ...imageElementProps } = {
+  const imageElementProps = {
     ...thumbnailProps,
     title: thumbnailProps.title ?? undefined,
   };
@@ -123,7 +122,7 @@ export const Image = <T extends ImageExtended>({
             imageProps={thumbnailProps}
           />
         ) : (
-          <img key={imageKey} {...imageElementProps} />
+          <img {...imageElementProps} />
         )}
       </div>
       {item.thumbnailCaption && (

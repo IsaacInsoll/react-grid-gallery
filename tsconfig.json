@@ -2,12 +2,10 @@
   "compilerOptions": {
     "target": "ES2018",
     "module": "ESNext",
+    "rootDir": "src",
     "sourceMap": true,
     "jsx": "react-jsx",
     "moduleResolution": "bundler",
-    "paths": {
-      "@gallery": ["./src/index.ts"]
-    },
     "esModuleInterop": true,
     "strict": true,
     "noImplicitReturns": true,
@@ -18,12 +16,6 @@
     "forceConsistentCasingInFileNames": true,
     "removeComments": true
   },
-  "include": [
-    "src/**/*",
-    "test/**/*",
-    "playwright.config.ts",
-    "vitest.config.ts",
-    "vitest.setup.ts"
-  ],
+  "include": ["src/**/*"],
   "exclude": ["node_modules"]
 }

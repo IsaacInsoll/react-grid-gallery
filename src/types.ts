@@ -71,7 +71,6 @@ export interface ImageProps<T extends ImageExtended = ImageExtended> {
 }
 
 export interface ThumbnailImageComponentImageProps {
-  key: string | number;
   src: string;
   alt: string;
   title: string | null;

@@ -2,7 +2,7 @@ import { createElement } from 'react';
 import { createRoot, hydrateRoot } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 import { Gallery } from '@gallery';
-import type { GalleryProps } from '@gallery';
+import type { GalleryProps, ThumbnailImageProps } from '@gallery';
 import { images } from './images';
 
 declare const __REACT_VERSION__: string;
@@ -25,6 +25,18 @@ const rootElement = document.getElementById('root');
 if (!rootElement) {
   throw new Error('Browser fixture root element was not found.');
 }
+
+const CustomThumbnail = ({ imageProps }: ThumbnailImageProps) => {
+  const { title, ...nativeImageProps } = imageProps;
+
+  return (
+    <img
+      {...nativeImageProps}
+      className="custom-thumbnail"
+      title={title ?? undefined}
+    />
+  );
+};
 
 const getGalleryProps = (): GalleryProps => {
   switch (scenario) {
@@ -75,6 +87,8 @@ const getGalleryProps = (): GalleryProps => {
     case 'decimal-width':
       rootElement.style.width = '474.7px';
       return { images };
+    case 'custom-thumbnail':
+      return { images, thumbnailImageComponent: CustomThumbnail };
     default:
       return { images };
   }
