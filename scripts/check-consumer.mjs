@@ -40,13 +40,18 @@ try {
   const tarball = path.join(packDirectory, tarballs[0]);
 
   runNpm(
+    ['ci', '--ignore-scripts', '--offline', '--no-audit', '--no-fund'],
+    consumerDirectory,
+  );
+  runNpm(
     [
       'install',
       '--ignore-scripts',
       '--offline',
       '--no-audit',
       '--no-fund',
-      '--no-package-lock',
+      '--no-save',
+      '--package-lock=false',
       tarball,
     ],
     consumerDirectory,
