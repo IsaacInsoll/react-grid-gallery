@@ -35,6 +35,7 @@
     "typecheck:source": "node node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
     "typecheck:test": "node node_modules/typescript/bin/tsc --noEmit -p tsconfig.test.json",
     "test:types": "npm run build && node scripts/check-types.mjs",
+    "test:consumer": "npm run build && node scripts/check-consumer.mjs",
     "test": "vitest run",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",

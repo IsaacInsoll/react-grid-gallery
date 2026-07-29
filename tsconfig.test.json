@@ -17,6 +17,7 @@
   "exclude": [
     "node_modules",
     "**/node_modules",
+    "test/fixtures/packed-consumer",
     "test/fixtures/types/consumer.tsx"
   ]
 }
