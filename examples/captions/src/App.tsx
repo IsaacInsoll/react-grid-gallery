@@ -1,5 +1,5 @@
-import { Gallery } from "react-grid-gallery";
-import { images } from "./images";
+import { Gallery } from 'react-grid-gallery';
+import { images } from './images';
 
 export default function App() {
   return (

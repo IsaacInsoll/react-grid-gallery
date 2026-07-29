@@ -1,25 +1,25 @@
 export default {
-  project: { link: "https://github.com/benhowell/react-grid-gallery" },
+  project: { link: 'https://github.com/benhowell/react-grid-gallery' },
   docsRepositoryBase:
-    "https://github.com/benhowell/react-grid-gallery/blob/master/examples",
+    'https://github.com/benhowell/react-grid-gallery/blob/master/examples',
   useNextSeoProps() {
     return {
-      titleTemplate: "%s – React Grid Gallery",
+      titleTemplate: '%s – React Grid Gallery',
     };
   },
-  faviconGlyph: "👋",
+  faviconGlyph: '👋',
   footer: {
     text: (
       <span>
-        Maintained by{" "}
+        Maintained by{' '}
         <a
           className="dark:nx-text-gray-200 hover:nx-opacity-70 nx-text-gray-500 nx-text-gray-900"
           target="_blank"
           href="https://github.com/benhowell"
         >
           Ben Howell
-        </a>{" "}
-        and{" "}
+        </a>{' '}
+        and{' '}
         <a
           className="dark:nx-text-gray-200 hover:nx-opacity-70 nx-text-gray-500 nx-text-gray-900"
           target="_blank"

@@ -1,6 +1,6 @@
-const withNextra = require("nextra")({
-  theme: "nextra-theme-docs",
-  themeConfig: "./theme.config.tsx",
+const withNextra = require('nextra')({
+  theme: 'nextra-theme-docs',
+  themeConfig: './theme.config.tsx',
 });
 
 module.exports = {
@@ -11,8 +11,8 @@ module.exports = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  basePath: "/react-grid-gallery",
-  assetPrefix: "/react-grid-gallery/",
+  basePath: '/react-grid-gallery',
+  assetPrefix: '/react-grid-gallery/',
   images: {
     unoptimized: true,
   },

@@ -3,16 +3,16 @@ import {
   buildLayoutFlat,
   BuildLayoutOptions,
   Image,
-} from "../src";
+} from '../src';
 
 const image100x100 = {
-  src: "",
+  src: '',
   width: 100,
   height: 100,
 };
 
-describe("buildLayout", () => {
-  it("should return empty array when images param not passed", () => {
+describe('buildLayout', () => {
+  it('should return empty array when images param not passed', () => {
     const images = undefined as [];
     const options = { containerWidth: 1000 };
 
@@ -30,7 +30,7 @@ describe("buildLayout", () => {
     expect(rows).toEqual([]);
   });
 
-  it("should return empty array when containerWidth is 0", () => {
+  it('should return empty array when containerWidth is 0', () => {
     const images = [image100x100];
     const options = { containerWidth: 0 };
 
@@ -39,7 +39,7 @@ describe("buildLayout", () => {
     expect(rows).toEqual([]);
   });
 
-  it("should not modify passed images array", () => {
+  it('should not modify passed images array', () => {
     const images = [image100x100];
     const options = { containerWidth: 100 };
 
@@ -48,13 +48,13 @@ describe("buildLayout", () => {
     expect(rows).not.toBe(images);
   });
 
-  it("should return custom image attributes", () => {
+  it('should return custom image attributes', () => {
     interface MyImage extends Image {
       customAttr: string;
     }
     const image: MyImage = {
-      customAttr: "imageId",
-      src: "",
+      customAttr: 'imageId',
+      src: '',
       width: 100,
       height: 100,
     };
@@ -62,10 +62,10 @@ describe("buildLayout", () => {
 
     const rows = buildLayout<MyImage>([image], options);
 
-    expect(rows[0][0].customAttr).toBe("imageId");
+    expect(rows[0][0].customAttr).toBe('imageId');
   });
 
-  it("should limit number of items when maxRows param passed", () => {
+  it('should limit number of items when maxRows param passed', () => {
     const images = [image100x100, image100x100, image100x100];
     const options = {
       containerWidth: 100,
@@ -111,7 +111,7 @@ describe("buildLayout", () => {
     ]);
   });
 
-  it("should build a single row when images fit into it", () => {
+  it('should build a single row when images fit into it', () => {
     const images = [image100x100, image100x100, image100x100];
     const options = { containerWidth: 201, rowHeight: 100, margin: 0 };
 
@@ -135,7 +135,7 @@ describe("buildLayout", () => {
     expect(rows.length).toEqual(2);
   });
 
-  it("should build multiple rows when images could fit into a single row but also the margin is specified", () => {
+  it('should build multiple rows when images could fit into a single row but also the margin is specified', () => {
     const images = [image100x100, image100x100, image100x100];
     const options = { containerWidth: 200, rowHeight: 100, margin: 5 };
 
@@ -161,7 +161,7 @@ describe("buildLayout", () => {
     ]);
   });
 
-  it("should fit multiple images into one row and calculate scaled width when rowHeight is specified", () => {
+  it('should fit multiple images into one row and calculate scaled width when rowHeight is specified', () => {
     const options = { containerWidth: 201, rowHeight: 50, margin: 0 };
     const images = [image100x100, image100x100, image100x100, image100x100];
 
@@ -190,8 +190,8 @@ describe("buildLayout", () => {
   });
 });
 
-describe("buildLayoutFlat", () => {
-  it("should return all row items as a flat list", () => {
+describe('buildLayoutFlat', () => {
+  it('should return all row items as a flat list', () => {
     const images = [image100x100, image100x100, image100x100];
     const options = { containerWidth: 200, rowHeight: 100, margin: 0 };
 

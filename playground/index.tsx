@@ -1,15 +1,15 @@
-import * as React from "react";
-import * as ReactDOM from "react-dom";
-import { Gallery } from "../src";
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import { Gallery } from '../src';
 
 const image1 = {
-  src: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Apples.jpg/320px-Apples.jpg",
+  src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Apples.jpg/320px-Apples.jpg',
   width: 320,
   height: 480,
 };
 
 const image2 = {
-  src: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Bananas.jpg/320px-Bananas.jpg",
+  src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Bananas.jpg/320px-Bananas.jpg',
   width: 320,
   height: 213,
 };
@@ -24,4 +24,4 @@ function App(): JSX.Element {
   );
 }
 
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(<App />, document.getElementById('root'));

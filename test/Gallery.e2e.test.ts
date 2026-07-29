@@ -4,31 +4,31 @@
 // @ts-ignore
 declare var ReactGridGallery, ReactDOM, React;
 
-import { toMatchImageSnapshot } from "jest-image-snapshot";
+import { toMatchImageSnapshot } from 'jest-image-snapshot';
 expect.extend({ toMatchImageSnapshot });
-import { GalleryProps } from "../src";
-import { images } from "./images";
+import { GalleryProps } from '../src';
+import { images } from './images';
 
 const transparentPixel =
-  "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
+  'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
 const redPixel =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8L+7yHwAF0gJbauK6vQAAAABJRU5ErkJggg==";
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8L+7yHwAF0gJbauK6vQAAAABJRU5ErkJggg==';
 const bluePixel =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mO0jfr3HwAFBwKW6YMOIwAAAABJRU5ErkJggg==";
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mO0jfr3HwAFBwKW6YMOIwAAAABJRU5ErkJggg==';
 
 const tags1 = [
   // avoid using any symbols because of the difference in font rendering on the local OS and CI ubuntu
-  { value: "     ", title: "     " },
-  { value: "     ", title: "     " },
+  { value: '     ', title: '     ' },
+  { value: '     ', title: '     ' },
 ];
 
 const getGalleryBrowserBuildPath = () => {
   try {
-    return require.resolve("./../dist/react-grid-gallery.umd.js");
+    return require.resolve('./../dist/react-grid-gallery.umd.js');
   } catch (error) {
-    if (error.code === "MODULE_NOT_FOUND") {
+    if (error.code === 'MODULE_NOT_FOUND') {
       console.error(
-        `Gallery build file isn't found! Don't forget to perform "npm run build" before running e2e tests.`
+        `Gallery build file isn't found! Don't forget to perform "npm run build" before running e2e tests.`,
       );
     }
     throw error;
@@ -37,11 +37,11 @@ const getGalleryBrowserBuildPath = () => {
 
 const renderGallery = async (
   props: GalleryProps,
-  options: { reactVersion?: number; timeout?: number; styles?: string } = {}
+  options: { reactVersion?: number; timeout?: number; styles?: string } = {},
 ) => {
   const reactVersion = options.reactVersion || 18;
   const timeout = options.timeout || 10000;
-  const styles = options.styles || "";
+  const styles = options.styles || '';
 
   await page.setContent('<html><div id="root"></div></html>');
   const reactScript = `https://unpkg.com/react@${reactVersion}/umd/react.development.js`;
@@ -54,15 +54,15 @@ const renderGallery = async (
   }
 
   const latestReactRender = (props: GalleryProps) => {
-    const root = ReactDOM.createRoot(document.getElementById("root"));
+    const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(React.createElement(ReactGridGallery.Gallery, props, null));
   };
 
   const previousReactRender = (props: GalleryProps) => {
-    const root = document.getElementById("root");
+    const root = document.getElementById('root');
     ReactDOM.render(
       React.createElement(ReactGridGallery.Gallery, props, null),
-      root
+      root,
     );
   };
 
@@ -75,30 +75,30 @@ const renderGallery = async (
   await page.waitForFunction(imagesHaveLoaded, { timeout });
 };
 
-describe("Gallery is visually correct", () => {
+describe('Gallery is visually correct', () => {
   beforeEach(async () => {
     await page.setViewport({ width: 800, height: 800 });
   });
 
-  it("on react16", async () => {
+  it('on react16', async () => {
     await renderGallery({ images }, { reactVersion: 16 });
 
     expect(await page.screenshot()).toMatchImageSnapshot();
   });
 
-  it("on react17", async () => {
+  it('on react17', async () => {
     await renderGallery({ images }, { reactVersion: 17 });
 
     expect(await page.screenshot()).toMatchImageSnapshot();
   });
 
-  it("on react18", async () => {
+  it('on react18', async () => {
     await renderGallery({ images }, { reactVersion: 18 });
 
     expect(await page.screenshot()).toMatchImageSnapshot();
   });
 
-  it("after viewport resize", async () => {
+  it('after viewport resize', async () => {
     const sizes = [
       [320, 570],
       [360, 640],
@@ -117,25 +117,25 @@ describe("Gallery is visually correct", () => {
     }
   });
 
-  it("when rowHeight is 100", async () => {
+  it('when rowHeight is 100', async () => {
     await renderGallery({ images, rowHeight: 100 });
 
     expect(await page.screenshot()).toMatchImageSnapshot();
   });
 
-  it("when margin is 10", async () => {
+  it('when margin is 10', async () => {
     await renderGallery({ images, margin: 10 });
 
     expect(await page.screenshot()).toMatchImageSnapshot();
   });
 
-  it("when maxRows is 2", async () => {
+  it('when maxRows is 2', async () => {
     await renderGallery({ images, maxRows: 2 });
 
     expect(await page.screenshot()).toMatchImageSnapshot();
   });
 
-  it("when images are selected", async () => {
+  it('when images are selected', async () => {
     const imagesWithSelection = images.map((i) => ({ ...i, isSelected: true }));
 
     await renderGallery({ images: imagesWithSelection });
@@ -143,7 +143,7 @@ describe("Gallery is visually correct", () => {
     expect(await page.screenshot()).toMatchImageSnapshot();
   });
 
-  it("when images are transparent", async () => {
+  it('when images are transparent', async () => {
     const transparentImages = images.map((i) => ({
       ...i,
       src: transparentPixel,
@@ -154,7 +154,7 @@ describe("Gallery is visually correct", () => {
     expect(await page.screenshot()).toMatchImageSnapshot();
   });
 
-  it("when nano prop passed", async () => {
+  it('when nano prop passed', async () => {
     const imagesWithNano = images.map((i, index) => ({
       ...i,
       src: transparentPixel,
@@ -166,7 +166,7 @@ describe("Gallery is visually correct", () => {
     expect(await page.screenshot()).toMatchImageSnapshot();
   });
 
-  it("when images have tags", async () => {
+  it('when images have tags', async () => {
     const imagesWithTags = images.map((i, index) => ({
       ...i,
       tags: index % 2 ? tags1 : [],
@@ -177,13 +177,13 @@ describe("Gallery is visually correct", () => {
     expect(await page.screenshot()).toMatchImageSnapshot();
   });
 
-  it("when images have tags and tagStyle prop passed", async () => {
+  it('when images have tags and tagStyle prop passed', async () => {
     const imagesWithTags = images.map((i, index) => ({
       ...i,
       tags: index % 2 ? tags1 : [],
     }));
     const tagStyle = {
-      background: "white",
+      background: 'white',
       padding: 10,
       opacity: 1,
     };
@@ -193,8 +193,8 @@ describe("Gallery is visually correct", () => {
     expect(await page.screenshot()).toMatchImageSnapshot();
   });
 
-  it("when container width is decimal", async () => {
-    const styles = "#root { width: 474.7px }";
+  it('when container width is decimal', async () => {
+    const styles = '#root { width: 474.7px }';
 
     await renderGallery({ images }, { styles });
 

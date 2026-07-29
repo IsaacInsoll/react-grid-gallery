@@ -1,4 +1,4 @@
-import App from "./../../custom-overlay/src/App";
+import App from './../../custom-overlay/src/App';
 
 # Custom Overlay
 
@@ -6,7 +6,7 @@ A custom element can be provided to be rendered as a thumbnail overlay on hover.
 
 ```jsx
 const image1 = {
-  src: "https://c2.staticflickr.com/9/8356/28897120681_3b2c0f43e0_b.jpg",
+  src: 'https://c2.staticflickr.com/9/8356/28897120681_3b2c0f43e0_b.jpg',
   width: 320,
   height: 212,
   customOverlay: (
@@ -14,21 +14,19 @@ const image1 = {
       <div>Boats (Jeshu John - designerspics.com)</div>
     </div>
   ),
-}
+};
 
-return (
-  <Gallery images={[image1]} />
-);
+return <Gallery images={[image1]} />;
 ```
 
-
 ## Live Demo
+
 <App />
 
 ## Source Code
+
 [react-grid-gallery/examples/custom-overlay](https://github.com/benhowell/react-grid-gallery/blob/master/examples/custom-overlay/src/App.tsx)
 
 ## CodeSandbox
+
 [![Edit react-grid-gallery-custom-overlay](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/benhowell/react-grid-gallery/tree/master/examples/custom-overlay?fontsize=14&hidenavigation=1&theme=dark)
-
-
