@@ -1,0 +1,15 @@
+{
+  "name": "@picr/react-grid-gallery-test-react-18-types",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.31",
+    "@types/react-dom": "18.3.7",
+    "typescript": "5.5.4"
+  }
+}

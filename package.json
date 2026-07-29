@@ -10,6 +10,7 @@
     "CHANGELOG.md"
   ],
   "workspaces": [
+    "test/fixtures/react-18-types",
     "test/fixtures/react-19"
   ],
   "exports": {
@@ -31,8 +32,9 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix --max-warnings 0",
     "typecheck": "npm run typecheck:source && npm run typecheck:test",
-    "typecheck:source": "tsc --noEmit -p tsconfig.json",
-    "typecheck:test": "tsc --noEmit -p tsconfig.test.json",
+    "typecheck:source": "node node_modules/typescript/bin/tsc --noEmit -p tsconfig.json",
+    "typecheck:test": "node node_modules/typescript/bin/tsc --noEmit -p tsconfig.test.json",
+    "test:types": "npm run build && node scripts/check-types.mjs",
     "test": "vitest run",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",

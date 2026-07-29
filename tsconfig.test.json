@@ -14,5 +14,9 @@
     "vitest.config.ts",
     "vitest.setup.ts"
   ],
-  "exclude": ["node_modules", "**/node_modules"]
+  "exclude": [
+    "node_modules",
+    "**/node_modules",
+    "test/fixtures/types/consumer.tsx"
+  ]
 }
