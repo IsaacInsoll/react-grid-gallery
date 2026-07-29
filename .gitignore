@@ -9,3 +9,5 @@ lib/
 .idea
 .cache
 .next
+playwright-report
+test-results

@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "ES2018",
     "module": "ESNext",
+    "rootDir": "src",
     "sourceMap": true,
     "jsx": "react-jsx",
     "moduleResolution": "bundler",
@@ -15,6 +16,6 @@
     "forceConsistentCasingInFileNames": true,
     "removeComments": true
   },
-  "include": ["src/**/*", "test/**/*", "vitest.config.ts", "vitest.setup.ts"],
-  "exclude": ["node_modules", "test/**/*.e2e.test.ts"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }
