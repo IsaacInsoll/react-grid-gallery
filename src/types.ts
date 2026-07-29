@@ -65,7 +65,7 @@ export interface ImageProps<T extends ImageExtended = ImageExtended> {
   item: T;
   index: number;
   margin: number;
-  isSelectable?: boolean;
+  isSelectable: boolean;
   onClick: (index: number, event: MouseEvent<HTMLElement>) => void;
   onSelect: (index: number, event: MouseEvent<HTMLElement>) => void;
   tileViewportStyle?: StyleProp<T>;
