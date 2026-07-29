@@ -209,7 +209,12 @@ describe('Gallery Component', () => {
 
       render(<Gallery images={[image]} />);
 
-      expect(getItemViewport().style.background).toContain(nano);
+      // `toHaveStyle` lowercases the declaration it compares, which mangles
+      // the case-sensitive base64 payload, so assert the properties directly.
+      const { style } = getItemViewport();
+      expect(style.background).toContain(`url("${nano}")`);
+      expect(style.backgroundSize).toBe('cover');
+      expect(style.backgroundPosition).toBe('center center');
     });
 
     it('should not show overlay when gallery item is not hovered over', () => {
