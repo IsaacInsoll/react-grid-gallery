@@ -53,6 +53,9 @@ jobs:
       - name: Check consumer types
         run: npm run test:types
 
+      - name: Check packed consumer
+        run: npm run test:consumer
+
       - name: Run unit tests
         run: npm test
 
