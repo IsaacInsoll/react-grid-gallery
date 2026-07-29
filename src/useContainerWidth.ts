@@ -6,7 +6,7 @@ export function useContainerWidth(defaultContainerWidth: number): {
   containerWidth: number;
 } {
   const ref = useRef<HTMLElement | null>(null);
-  const observerRef = useRef<ResizeObserver>();
+  const observerRef = useRef<ResizeObserver | undefined>(undefined);
 
   const [containerWidth, setContainerWidth] = useState(defaultContainerWidth);
 

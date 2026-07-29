@@ -8,7 +8,7 @@ import { getStyle } from './styles';
 export const Image = <T extends ImageExtended>({
   item,
   thumbnailImageComponent: ThumbnailImageComponent,
-  isSelectable = true,
+  isSelectable,
   thumbnailStyle,
   tagStyle,
   tileViewportStyle,

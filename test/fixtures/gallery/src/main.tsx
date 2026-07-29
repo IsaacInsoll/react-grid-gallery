@@ -19,7 +19,8 @@ const tags = [
   { value: '     ', title: '     ' },
 ];
 
-const scenario = new URLSearchParams(window.location.search).get('scenario');
+const scenario =
+  new URLSearchParams(window.location.search).get('scenario') ?? 'default';
 const rootElement = document.getElementById('root');
 
 if (!rootElement) {
@@ -40,8 +41,6 @@ const CustomThumbnail = ({ imageProps }: ThumbnailImageProps) => {
 
 const getGalleryProps = (): GalleryProps => {
   switch (scenario) {
-    case null:
-      return { images };
     case 'row-height':
       return { images, rowHeight: 100 };
     case 'margin':
