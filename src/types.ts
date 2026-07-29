@@ -1,4 +1,9 @@
-import { MouseEvent, CSSProperties, ReactNode, ComponentType } from 'react';
+import type {
+  ComponentType,
+  CSSProperties,
+  MouseEvent,
+  ReactNode,
+} from 'react';
 
 type Key = string | number;
 

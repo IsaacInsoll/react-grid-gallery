@@ -32,6 +32,12 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
+      - name: Set up npm
+        run: |
+          corepack enable npm
+          corepack install
+          npm --version
+
       - name: Install dependencies
         run: npm ci
 
@@ -44,8 +50,8 @@ jobs:
       - name: Run unit tests
         run: npm test
 
-      - name: Build package
-        run: npm run build
+      - name: Check package
+        run: npm run package:check
 
   browser:
     name: Browser tests
@@ -65,6 +71,12 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
           cache-dependency-path: package-lock.json
+
+      - name: Set up npm
+        run: |
+          corepack enable npm
+          corepack install
+          npm --version
 
       - name: Install dependencies
         run: npm ci
