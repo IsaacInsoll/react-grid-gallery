@@ -1,4 +1,4 @@
-import type { MouseEvent } from 'react';
+import type { MouseEvent, ReactElement } from 'react';
 import { Image } from './Image';
 import { useContainerWidth } from './useContainerWidth';
 import { buildLayoutFlat } from './buildLayout';
@@ -19,7 +19,7 @@ export const Gallery = <T extends ImageInterface>({
   thumbnailStyle,
   tagStyle,
   thumbnailImageComponent,
-}: GalleryProps<T>): JSX.Element => {
+}: GalleryProps<T>): ReactElement => {
   const { containerRef, containerWidth } = useContainerWidth(
     defaultContainerWidth,
   );

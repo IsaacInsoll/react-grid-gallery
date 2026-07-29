@@ -2,9 +2,9 @@ import { expect, test } from '@playwright/test';
 
 const imagesCount = 24;
 
-for (const [name, scenario] of [
-  ['the default image', 'default'],
-  ['a custom thumbnail', 'custom-thumbnail'],
+for (const [name, scenario, customThumbnailCount] of [
+  ['the default image', 'default', 0],
+  ['a custom thumbnail', 'custom-thumbnail', imagesCount],
 ] as const) {
   test(`renders and hydrates ${name} with React 19`, async ({ page }) => {
     const errors: string[] = [];
@@ -26,11 +26,9 @@ for (const [name, scenario] of [
       imagesCount,
     );
 
-    if (scenario === 'custom-thumbnail') {
-      await expect(page.locator('img.custom-thumbnail')).toHaveCount(
-        imagesCount,
-      );
-    }
+    await expect(page.locator('img.custom-thumbnail')).toHaveCount(
+      customThumbnailCount,
+    );
 
     expect(errors).toEqual([]);
   });

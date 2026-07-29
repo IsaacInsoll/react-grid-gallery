@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { ReactElement } from 'react';
 import * as styles from './styles';
 import type { CheckButtonProps } from './types';
 
@@ -9,14 +10,18 @@ export const CheckButton = ({
   color = '#FFFFFFB2',
   selectedColor = '#4285F4FF',
   hoverColor = '#FFFFFFFF',
-}: CheckButtonProps): JSX.Element => {
+}: CheckButtonProps): ReactElement => {
   const [hover, setHover] = useState(false);
 
   const circleStyle = { display: isSelected ? 'block' : 'none' };
   const fillColor = isSelected ? selectedColor : hover ? hoverColor : color;
 
-  const handleMouseOver = () => setHover(true);
-  const handleMouseOut = () => setHover(false);
+  const handleMouseOver = () => {
+    setHover(true);
+  };
+  const handleMouseOut = () => {
+    setHover(false);
+  };
 
   return (
     <div
