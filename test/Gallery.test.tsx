@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
-import '@testing-library/jest-dom';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { renderToString } from 'react-dom/server';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Gallery } from '../src/Gallery';
 import { ThumbnailImageProps } from '../src/types';
 
@@ -32,12 +32,12 @@ const renderStatic = (element: ReactElement) =>
 
 describe('Gallery Component', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     // define clientWidth for gallery root element
     Object.defineProperty(Element.prototype, 'clientWidth', { value: 400 });
     // @ts-ignore
-    Element.prototype.getBoundingClientRect = jest.fn(() => ({ width: 400 }));
+    Element.prototype.getBoundingClientRect = vi.fn(() => ({ width: 400 }));
   });
 
   it('should assign default id value', () => {
@@ -209,7 +209,12 @@ describe('Gallery Component', () => {
 
       render(<Gallery images={[image]} />);
 
-      expect(getItemViewport()).toHaveStyle(`background: url(${nano})`);
+      // `toHaveStyle` lowercases the declaration it compares, which mangles
+      // the case-sensitive base64 payload, so assert the properties directly.
+      const { style } = getItemViewport();
+      expect(style.background).toContain(`url("${nano}")`);
+      expect(style.backgroundSize).toBe('cover');
+      expect(style.backgroundPosition).toBe('center center');
     });
 
     it('should not show overlay when gallery item is not hovered over', () => {
@@ -279,7 +284,7 @@ describe('Gallery Component', () => {
     });
 
     it('should call onSelect with index and image object arguments passed', () => {
-      const handleSelect = jest.fn();
+      const handleSelect = vi.fn();
 
       render(
         <Gallery

@@ -15,6 +15,6 @@
     "forceConsistentCasingInFileNames": true,
     "removeComments": true
   },
-  "include": ["src/**/*", "test/**/*"],
+  "include": ["src/**/*", "test/**/*", "vitest.config.ts", "vitest.setup.ts"],
   "exclude": ["node_modules", "test/**/*.e2e.test.ts"]
 }
