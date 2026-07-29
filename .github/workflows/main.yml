@@ -50,6 +50,9 @@ jobs:
       - name: Check types
         run: npm run typecheck
 
+      - name: Check consumer types
+        run: npm run test:types
+
       - name: Run unit tests
         run: npm test
 

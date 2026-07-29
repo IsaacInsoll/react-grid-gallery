@@ -11,6 +11,7 @@ import tseslint from 'typescript-eslint';
 const sourceFiles = ['src/**/*.{ts,tsx}'];
 const testFiles = ['test/**/*.{ts,tsx}', 'vitest.setup.ts'];
 const configFiles = ['*.config.ts'];
+const consumerTypeFiles = ['test/fixtures/types/consumer.tsx'];
 
 export default defineConfig(
   {
@@ -59,6 +60,10 @@ export default defineConfig(
       ],
       '@typescript-eslint/switch-exhaustiveness-check': 'error',
     },
+  },
+  {
+    files: consumerTypeFiles,
+    extends: [tseslint.configs.disableTypeChecked],
   },
   {
     files: sourceFiles,
