@@ -11,4 +11,4 @@ examples/**/package-lock.json
 examples/**/build
 examples/**/dist
 examples/**/.next
-test/__image_snapshots__
+test/browser/__screenshots__

@@ -29,7 +29,7 @@ export const Image = <T extends ImageExtended>({
     style: getStyle(thumbnailStyle, styles.thumbnail, styleContext),
   };
 
-  const imageElementProps = {
+  const { key: imageKey, ...imageElementProps } = {
     ...thumbnailProps,
     title: thumbnailProps.title ?? undefined,
   };
@@ -123,7 +123,7 @@ export const Image = <T extends ImageExtended>({
             imageProps={thumbnailProps}
           />
         ) : (
-          <img {...imageElementProps} />
+          <img key={imageKey} {...imageElementProps} />
         )}
       </div>
       {item.thumbnailCaption && (

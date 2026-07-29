@@ -5,6 +5,9 @@
     "sourceMap": true,
     "jsx": "react-jsx",
     "moduleResolution": "bundler",
+    "paths": {
+      "@gallery": ["./src/index.ts"]
+    },
     "esModuleInterop": true,
     "strict": true,
     "noImplicitReturns": true,
@@ -15,6 +18,12 @@
     "forceConsistentCasingInFileNames": true,
     "removeComments": true
   },
-  "include": ["src/**/*", "test/**/*", "vitest.config.ts", "vitest.setup.ts"],
-  "exclude": ["node_modules", "test/**/*.e2e.test.ts"]
+  "include": [
+    "src/**/*",
+    "test/**/*",
+    "playwright.config.ts",
+    "vitest.config.ts",
+    "vitest.setup.ts"
+  ],
+  "exclude": ["node_modules"]
 }

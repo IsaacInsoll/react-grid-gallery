@@ -4,7 +4,7 @@ import {
   buildLayoutFlat,
   BuildLayoutOptions,
   Image,
-} from '../src';
+} from '../../src';
 
 const image100x100 = {
   src: '',
