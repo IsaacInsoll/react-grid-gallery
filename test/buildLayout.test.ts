@@ -13,7 +13,7 @@ const image100x100 = {
 
 describe('buildLayout', () => {
   it('should return empty array when images param not passed', () => {
-    const images = undefined as [];
+    const images = undefined as unknown as [];
     const options = { containerWidth: 1000 };
 
     const rows = buildLayout(images, options);

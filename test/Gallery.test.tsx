@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import '@testing-library/jest-dom';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { renderToString } from 'react-dom/server';
@@ -79,7 +79,11 @@ describe('Gallery Component', () => {
 
   it('should render element with custom properties provided via thumbnailImageComponent prop', () => {
     const thumbnailImageComponent = (props: ThumbnailImageProps) => (
-      <img {...props.imageProps} className="lazyload" />
+      <img
+        {...props.imageProps}
+        title={props.imageProps.title ?? undefined}
+        className="lazyload"
+      />
     );
 
     render(

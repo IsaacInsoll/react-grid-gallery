@@ -28,7 +28,7 @@ export default [
       commonjs({ include: /node_modules/ }),
       typescript({
         tsconfigOverride: {
-          compilerOptions: { target: 'ES5' },
+          compilerOptions: { target: 'ES5', ignoreDeprecations: '6.0' },
         },
       }),
       sourcemaps(),

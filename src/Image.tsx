@@ -29,6 +29,11 @@ export const Image = <T extends ImageExtended>({
     style: getStyle(thumbnailStyle, styles.thumbnail, styleContext),
   };
 
+  const imageElementProps = {
+    ...thumbnailProps,
+    title: thumbnailProps.title ?? undefined,
+  };
+
   const handleCheckButtonClick = (event: MouseEvent<HTMLElement>) => {
     if (!isSelectable) {
       return;
@@ -65,7 +70,7 @@ export const Image = <T extends ImageExtended>({
         style={styles.tileIconBar}
       >
         <CheckButton
-          isSelected={item.isSelected}
+          isSelected={!!item.isSelected}
           isVisible={item.isSelected || (isSelectable && hover)}
           onClick={handleCheckButtonClick}
         />
@@ -118,7 +123,7 @@ export const Image = <T extends ImageExtended>({
             imageProps={thumbnailProps}
           />
         ) : (
-          <img {...thumbnailProps} />
+          <img {...imageElementProps} />
         )}
       </div>
       {item.thumbnailCaption && (
