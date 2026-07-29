@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  buildLayout,
-  buildLayoutFlat,
-  BuildLayoutOptions,
-  Image,
-} from '../../src';
+import { buildLayout, buildLayoutFlat } from '../../src';
+import type { BuildLayoutOptions, Image } from '../../src';
 
 const image100x100 = {
   src: '',

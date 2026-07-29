@@ -52,10 +52,7 @@ export default defineConfig(({ mode }) => {
       alias: [
         {
           find: '@gallery',
-          replacement: path.join(
-            repositoryRoot,
-            'dist/react-grid-gallery.esm.js',
-          ),
+          replacement: path.join(repositoryRoot, 'dist/index.js'),
         },
         ...createReactAliases(reactPackage),
       ],

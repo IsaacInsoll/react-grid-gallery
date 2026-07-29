@@ -1,31 +1,31 @@
 {
-  "name": "react-grid-gallery",
-  "version": "1.0.1",
-  "description": "Justified gallery component for React.",
-  "types": "dist/react-grid-gallery.d.ts",
-  "main": "dist/react-grid-gallery.cjs.js",
-  "module": "dist/react-grid-gallery.esm.js",
-  "browser": "dist/react-grid-gallery.umd.js",
+  "name": "@picr/react-grid-gallery",
+  "version": "1.0.0",
+  "description": "Justified image gallery component for modern React applications.",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
   "files": [
     "dist",
-    "src"
+    "CHANGELOG.md"
   ],
   "workspaces": [
     "test/fixtures/react-19"
   ],
   "exports": {
-    "types": "./dist/react-grid-gallery.d.ts",
-    "browser": "./dist/react-grid-gallery.umd.js",
-    "import": "./dist/react-grid-gallery.esm.js",
-    "require": "./dist/react-grid-gallery.cjs.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "sideEffects": false,
   "scripts": {
-    "prepublishOnly": "npm run build",
-    "clean": "rimraf dist && rimraf node_modules/.cache",
-    "rollup:build": "rollup -c",
-    "watch": "rollup -c -w",
-    "build": "npm run clean && npm run rollup:build",
+    "prepack": "npm run build",
+    "watch": "tsdown --watch",
+    "build": "tsdown",
+    "package:check": "npm run build && node scripts/check-package.mjs",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "typecheck": "npm run typecheck:source && npm run typecheck:test",
@@ -40,13 +40,11 @@
     "test:browser:container:update": "./scripts/run-playwright.sh test:browser:update"
   },
   "peerDependencies": {
-    "react": ">=16.14.0"
+    "react": ">=18.0.0 <20.0.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
     "@playwright/test": "1.62.0",
-    "@rollup/plugin-commonjs": "^25.0.5",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-replace": "^5.0.3",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^14.0.0",
     "@types/node": "22.20.1",
@@ -54,28 +52,34 @@
     "@types/react-dom": "18.3.7",
     "jsdom": "29.1.1",
     "prettier": "3.9.6",
+    "publint": "0.3.22",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "rimraf": "^5.0.5",
-    "rollup": "^2.79.1",
-    "rollup-plugin-dts": "^4.2.2",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-sourcemaps": "^0.6.3",
-    "rollup-plugin-typescript2": "^0.36.0",
+    "tsdown": "0.22.14",
     "typescript": "6.0.2",
     "vite": "8.1.5",
     "vitest": "4.1.10"
   },
-  "overrides": {
-    "rollup-plugin-dts": {
-      "typescript": "$typescript"
-    }
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "npm@12.0.1",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/benhowell/react-grid-gallery.git"
+    "url": "git+https://github.com/IsaacInsoll/react-grid-gallery.git"
   },
   "keywords": [
+    "react-grid-gallery",
+    "justified-gallery",
+    "react-gallery",
+    "image-grid",
+    "photo-grid",
+    "typescript",
+    "esm",
     "react",
     "react-component",
     "image",
@@ -95,7 +99,7 @@
   "author": "Ben Howell",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/benhowell/react-grid-gallery/issues"
+    "url": "https://github.com/IsaacInsoll/react-grid-gallery/issues"
   },
-  "homepage": "https://benhowell.github.io/react-grid-gallery/"
+  "homepage": "https://github.com/IsaacInsoll/react-grid-gallery#readme"
 }
