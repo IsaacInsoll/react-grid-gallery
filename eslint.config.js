@@ -22,6 +22,7 @@ export default defineConfig(
       'playground/**',
       'test-results/**',
       'test/browser/__screenshots__/**',
+      '**/.type-package/**',
       '**/node_modules/**',
     ],
   },

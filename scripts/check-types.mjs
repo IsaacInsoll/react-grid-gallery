@@ -1,47 +1,48 @@
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, rmSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const compilers = [
-  [
-    'TypeScript 5.5.4',
-    resolve(
-      'test',
-      'fixtures',
-      'react-18-types',
-      'node_modules',
-      'typescript',
-      'bin',
-      'tsc',
-    ),
-  ],
-  ['TypeScript 6.0.2', resolve('node_modules', 'typescript', 'bin', 'tsc')],
-  [
-    'TypeScript 7.0.2',
-    resolve(
-      'test',
-      'fixtures',
-      'react-19',
-      'node_modules',
-      'typescript',
-      'bin',
-      'tsc',
-    ),
-  ],
+const compilerPackages = [
+  resolve('test', 'fixtures', 'react-18-types', 'node_modules', 'typescript'),
+  resolve('node_modules', 'typescript'),
+  resolve('test', 'fixtures', 'react-19', 'node_modules', 'typescript'),
 ];
+const compilers = compilerPackages.map((packageDirectory) => {
+  const manifest = JSON.parse(
+    readFileSync(resolve(packageDirectory, 'package.json'), 'utf8'),
+  );
+
+  return [
+    `TypeScript ${manifest.version}`,
+    resolve(packageDirectory, 'bin', 'tsc'),
+  ];
+});
 const fixtures = ['react-18-types', 'react-19'];
 const resolutions = ['bundler', 'nodenext'];
 const consumerFixture = resolve('test', 'fixtures', 'types', 'consumer.tsx');
 const generatedDeclaration = resolve('dist', 'index.d.ts');
+const generatedRuntime = resolve('dist', 'index.js');
+const packageManifest = resolve('package.json');
 const generatedDirectories = fixtures.map((fixture) =>
   resolve('test', 'fixtures', fixture, '.type-package'),
 );
 
 try {
   for (const directory of generatedDirectories) {
-    mkdirSync(directory, { recursive: true });
+    const packageDirectory = resolve(
+      directory,
+      'node_modules',
+      '@picr',
+      'react-grid-gallery',
+    );
+    const packageDist = resolve(packageDirectory, 'dist');
+
+    rmSync(directory, { recursive: true, force: true });
+    mkdirSync(packageDist, { recursive: true });
     copyFileSync(consumerFixture, resolve(directory, 'consumer.tsx'));
-    copyFileSync(generatedDeclaration, resolve(directory, 'index.d.ts'));
+    copyFileSync(packageManifest, resolve(packageDirectory, 'package.json'));
+    copyFileSync(generatedDeclaration, resolve(packageDist, 'index.d.ts'));
+    copyFileSync(generatedRuntime, resolve(packageDist, 'index.js'));
   }
 
   for (const [compilerName, compiler] of compilers) {

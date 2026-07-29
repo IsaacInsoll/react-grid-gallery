@@ -11,3 +11,4 @@ lib/
 .next
 playwright-report
 test-results
+.type-package/

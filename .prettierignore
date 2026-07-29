@@ -12,3 +12,4 @@ examples/**/build
 examples/**/dist
 examples/**/.next
 test/browser/__screenshots__
+.type-package/

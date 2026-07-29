@@ -7,10 +7,7 @@
     "skipLibCheck": false,
     "verbatimModuleSyntax": true,
     "exactOptionalPropertyTypes": true,
-    "noUncheckedIndexedAccess": true,
-    "paths": {
-      "@picr/react-grid-gallery": ["./.type-package/index.d.ts"]
-    }
+    "noUncheckedIndexedAccess": true
   },
   "include": [".type-package/consumer.tsx"]
 }
