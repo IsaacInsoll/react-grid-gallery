@@ -1,15 +1,16 @@
 import { CSSProperties } from 'react';
 import {
+  Image,
   ImageExtended,
   StyleFunction,
   StyleFunctionContext,
   StyleProp,
 } from './types';
 
-export const getStyle = (
-  styleProp: StyleProp | undefined,
-  fallback: StyleFunction,
-  context: StyleFunctionContext,
+export const getStyle = <T extends Image>(
+  styleProp: StyleProp<T> | undefined,
+  fallback: StyleFunction<T>,
+  context: StyleFunctionContext<T>,
 ): CSSProperties => {
   if (typeof styleProp === 'function') {
     return styleProp(context);
@@ -38,7 +39,9 @@ export const gallery: CSSProperties = {
 };
 
 export const thumbnail = ({ item }: { item: ImageExtended }): CSSProperties => {
-  const rotationTransformValue = rotationTransformMap[item.orientation];
+  const rotationTransformValue = item.orientation
+    ? rotationTransformMap[item.orientation]
+    : undefined;
 
   const style = {
     cursor: 'pointer',
