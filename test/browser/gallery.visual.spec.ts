@@ -10,7 +10,11 @@ const settleLayout = async (page: Page) => {
   await page.evaluate(
     () =>
       new Promise<void>((resolve) =>
-        requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            resolve();
+          }),
+        ),
       ),
   );
 };
@@ -37,7 +41,9 @@ test.describe('Gallery visual regression', () => {
       await page.setViewportSize({ width, height });
       await settleLayout(page);
 
-      await expect(page).toHaveScreenshot(`resize-${width}x${height}.png`);
+      await expect(page).toHaveScreenshot(
+        `resize-${String(width)}x${String(height)}.png`,
+      );
     }
   });
 

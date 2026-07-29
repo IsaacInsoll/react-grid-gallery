@@ -40,6 +40,8 @@ const CustomThumbnail = ({ imageProps }: ThumbnailImageProps) => {
 
 const getGalleryProps = (): GalleryProps => {
   switch (scenario) {
+    case null:
+      return { images };
     case 'row-height':
       return { images, rowHeight: 100 };
     case 'margin':
@@ -111,7 +113,11 @@ if (new URLSearchParams(window.location.search).has('hydrate')) {
 }
 
 const markReady = async () => {
-  await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+  await new Promise<void>((resolve) =>
+    requestAnimationFrame(() => {
+      resolve();
+    }),
+  );
   await Promise.all(
     Array.from(document.images).map(
       (image) =>
@@ -121,13 +127,29 @@ const markReady = async () => {
             return;
           }
 
-          image.addEventListener('load', () => resolve(), { once: true });
-          image.addEventListener('error', () => resolve(), { once: true });
+          image.addEventListener(
+            'load',
+            () => {
+              resolve();
+            },
+            { once: true },
+          );
+          image.addEventListener(
+            'error',
+            () => {
+              resolve();
+            },
+            { once: true },
+          );
         }),
     ),
   );
   await new Promise<void>((resolve) =>
-    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        resolve();
+      }),
+    ),
   );
 
   document.body.dataset.galleryReady = 'true';

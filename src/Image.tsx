@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { MouseEvent } from 'react';
+import type { MouseEvent, ReactElement } from 'react';
 import { CheckButton } from './CheckButton';
 import type { ImageExtended, ImageProps } from './types';
 import * as styles from './styles';
@@ -16,7 +16,7 @@ export const Image = <T extends ImageExtended>({
   index,
   onSelect,
   onClick,
-}: ImageProps<T>): JSX.Element => {
+}: ImageProps<T>): ReactElement => {
   const styleContext = { item };
 
   const [hover, setHover] = useState(false);
@@ -61,8 +61,12 @@ export const Image = <T extends ImageExtended>({
     <div
       className="ReactGridGallery_tile"
       data-testid="grid-gallery-item"
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
+      onMouseEnter={() => {
+        setHover(true);
+      }}
+      onMouseLeave={() => {
+        setHover(false);
+      }}
       style={styles.galleryItem({ margin })}
     >
       <div

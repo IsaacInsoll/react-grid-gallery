@@ -36,7 +36,7 @@ describe('Gallery Component', () => {
 
     // define clientWidth for gallery root element
     Object.defineProperty(Element.prototype, 'clientWidth', { value: 400 });
-    // @ts-ignore
+    // @ts-expect-error - the test only needs a stable width from the DOM API.
     Element.prototype.getBoundingClientRect = vi.fn(() => ({ width: 400 }));
   });
 

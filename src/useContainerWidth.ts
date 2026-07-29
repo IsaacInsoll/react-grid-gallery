@@ -1,6 +1,10 @@
 import { useRef, useCallback, useState } from 'react';
+import type { RefCallback } from 'react';
 
-export function useContainerWidth(defaultContainerWidth: number) {
+export function useContainerWidth(defaultContainerWidth: number): {
+  containerRef: RefCallback<HTMLElement>;
+  containerWidth: number;
+} {
   const ref = useRef<HTMLElement | null>(null);
   const observerRef = useRef<ResizeObserver>();
 
@@ -19,7 +23,9 @@ export function useContainerWidth(defaultContainerWidth: number) {
       let width = ref.current.clientWidth;
       try {
         width = ref.current.getBoundingClientRect().width;
-      } catch (err) {}
+      } catch {
+        // Keep clientWidth as the fallback when layout measurement is unavailable.
+      }
       setContainerWidth(Math.floor(width));
     };
 

@@ -10,23 +10,22 @@ type NormalizedBuildLayoutOptions = BuildLayoutOptions & {
   margin: number;
 };
 
-const calculateCutOff = <T extends ImageExtended = ImageExtended>(
-  items: T[],
+const calculateCutOff = (
+  items: ImageExtended[],
   totalRowWidth: number,
   protrudingWidth: number,
 ) => {
   const cutOff: number[] = [];
   let cutSum = 0;
-  for (let i in items) {
-    const item = items[i];
+  items.forEach((item, index) => {
     const fractionOfWidth = item.scaledWidth / totalRowWidth;
-    cutOff[i] = Math.floor(fractionOfWidth * protrudingWidth);
-    cutSum += cutOff[i];
-  }
+    cutOff[index] = Math.floor(fractionOfWidth * protrudingWidth);
+    cutSum += cutOff[index];
+  });
 
   let stillToCutOff = protrudingWidth - cutSum;
   while (stillToCutOff > 0) {
-    for (let i in cutOff) {
+    for (const i of cutOff.keys()) {
       cutOff[i]++;
       stillToCutOff--;
       if (stillToCutOff < 0) break;
@@ -63,7 +62,7 @@ const getRow = <T extends Image = Image>(
   const protrudingWidth = totalRowWidth - containerWidth;
   if (row.length > 0 && protrudingWidth > 0) {
     const cutoff = calculateCutOff(row, totalRowWidth, protrudingWidth);
-    for (const i in row) {
+    for (const i of row.keys()) {
       const pixelsToRemove = cutoff[i];
       const item = row[i];
       item.marginLeft = -Math.abs(Math.floor(pixelsToRemove / 2));
@@ -95,6 +94,8 @@ export const buildLayout = <T extends Image = Image>(
   images: T[],
   { containerWidth, maxRows, rowHeight = 180, margin = 2 }: BuildLayoutOptions,
 ): ImageExtendedRow<T>[] => {
+  // Retain a defensive runtime guard for untyped JavaScript consumers.
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!images) return [];
   if (!containerWidth) return [];
 

@@ -65,7 +65,7 @@ export interface ImageProps<T extends ImageExtended = ImageExtended> {
   item: T;
   index: number;
   margin: number;
-  isSelectable: boolean;
+  isSelectable?: boolean;
   onClick: (index: number, event: MouseEvent<HTMLElement>) => void;
   onSelect: (index: number, event: MouseEvent<HTMLElement>) => void;
   tileViewportStyle?: StyleProp<T>;
@@ -106,8 +106,8 @@ export interface GalleryProps<T extends Image = Image> {
 }
 
 export interface CheckButtonProps {
-  isSelected: boolean;
-  isVisible: boolean;
+  isSelected?: boolean;
+  isVisible?: boolean;
   onClick: (event: MouseEvent<HTMLElement>) => void;
   color?: string;
   selectedColor?: string;
