@@ -6,6 +6,7 @@
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
   "files": [
+    "ACKNOWLEDGEMENTS.md",
     "dist",
     "CHANGELOG.md"
   ],
@@ -112,6 +113,12 @@
     "photo gallery"
   ],
   "author": "Ben Howell",
+  "contributors": [
+    {
+      "name": "Isaac Insoll",
+      "url": "https://github.com/IsaacInsoll"
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/IsaacInsoll/react-grid-gallery/issues"

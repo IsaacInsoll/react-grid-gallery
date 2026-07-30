@@ -21,8 +21,6 @@ export default defineConfig(
     ignores: [
       'dist/**',
       'coverage/**',
-      'examples/**',
-      'playground/**',
       'test-results/**',
       'test/browser/__screenshots__/**',
       '**/.type-package/**',

@@ -7,9 +7,5 @@ coverage
 .publish
 *.bundle.js
 package-lock.json
-examples/**/package-lock.json
-examples/**/build
-examples/**/dist
-examples/**/.next
 test/browser/__screenshots__
 .type-package/

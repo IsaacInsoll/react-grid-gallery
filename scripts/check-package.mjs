@@ -6,6 +6,7 @@ import path from 'node:path';
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const packDirectory = mkdtempSync(path.join(tmpdir(), 'react-grid-gallery-'));
 const expectedFiles = [
+  'ACKNOWLEDGEMENTS.md',
   'CHANGELOG.md',
   'LICENSE',
   'README.md',
