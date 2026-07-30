@@ -29,3 +29,5 @@ for (const [name, value] of Object.entries(gallery)) {
     throw new TypeError(`Expected ${name} to be a function.`);
   }
 }
+
+console.log(`Verified runtime exports: ${actualExports.join(', ')}`);
