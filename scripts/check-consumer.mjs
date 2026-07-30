@@ -22,7 +22,11 @@ const runNpm = (args, cwd) =>
 
 try {
   mkdirSync(packDirectory);
-  cpSync(fixtureDirectory, consumerDirectory, { recursive: true });
+  cpSync(fixtureDirectory, consumerDirectory, {
+    recursive: true,
+    filter: (source) =>
+      !['dist', 'node_modules'].includes(path.basename(source)),
+  });
 
   runNpm(
     ['pack', '--ignore-scripts', '--pack-destination', packDirectory],
@@ -40,18 +44,17 @@ try {
   const tarball = path.join(packDirectory, tarballs[0]);
 
   runNpm(
-    ['ci', '--ignore-scripts', '--offline', '--no-audit', '--no-fund'],
+    ['ci', '--ignore-scripts', '--prefer-offline', '--no-audit', '--no-fund'],
     consumerDirectory,
   );
   runNpm(
     [
       'install',
       '--ignore-scripts',
-      '--prefer-offline',
+      '--offline',
       '--no-audit',
       '--no-fund',
       '--no-save',
-      '--package-lock=false',
       tarball,
     ],
     consumerDirectory,
