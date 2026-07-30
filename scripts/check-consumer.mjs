@@ -47,11 +47,12 @@ try {
     ['ci', '--ignore-scripts', '--prefer-offline', '--no-audit', '--no-fund'],
     consumerDirectory,
   );
+  // npm 12 needs registry metadata to validate peers for a new tarball on a cold runner.
   runNpm(
     [
       'install',
       '--ignore-scripts',
-      '--offline',
+      '--prefer-offline',
       '--no-audit',
       '--no-fund',
       '--no-save',
