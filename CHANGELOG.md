@@ -1,6 +1,11 @@
 # CHANGELOG
 
-The most recent changelog is available on the [releases page](https://github.com/benhowell/react-grid-gallery/releases).
+Future `@picr/react-grid-gallery` releases will be recorded here and on this
+fork's [GitHub Releases](https://github.com/IsaacInsoll/react-grid-gallery/releases)
+page. The entries below preserve the original project's release history and
+links.
+
+## Inherited `react-grid-gallery` History
 
 ### v0.5.6 / 2022-08-23
 

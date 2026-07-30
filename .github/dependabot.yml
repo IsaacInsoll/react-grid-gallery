@@ -5,3 +5,7 @@ updates:
     versioning-strategy: increase
     schedule:
       interval: 'monthly'
+    groups:
+      npm-dependencies:
+        patterns:
+          - '*'
