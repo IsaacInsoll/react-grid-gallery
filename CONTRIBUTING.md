@@ -11,14 +11,16 @@ Use Node 24.18.0 from `.nvmrc` and the integrity-pinned npm version declared in
 
 ```sh
 nvm use
-npm install --global --ignore-scripts corepack@0.35.0
+node scripts/install-corepack.mjs
 corepack enable npm
 corepack install
 npm ci
 ```
 
-The explicit Corepack install keeps npm selection consistent on Node versions
-that no longer bundle Corepack. CI also verifies the project on Node 22 and 26.
+The bootstrap script verifies Corepack against the repository's pinned SHA-512
+before installing it. Using the same bootstrap on every Node version avoids
+depending on whichever Corepack release a runtime happens to bundle. CI also
+verifies the packed package on Node 22 and 26.
 
 ## Checks
 

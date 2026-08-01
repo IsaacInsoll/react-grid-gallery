@@ -34,7 +34,7 @@ jobs:
 
       - name: Set up npm
         run: |
-          npm install --global --ignore-scripts corepack@0.35.0
+          node scripts/install-corepack.mjs
           corepack enable npm
           corepack install
           npm --version
@@ -90,7 +90,7 @@ jobs:
 
       - name: Set up npm
         run: |
-          npm install --global --ignore-scripts corepack@0.35.0
+          node scripts/install-corepack.mjs
           corepack enable npm
           corepack install
           npm --version
@@ -103,6 +103,9 @@ jobs:
 
       - name: Run unit tests
         run: npm test
+
+      - name: Check packed consumer
+        run: npm run test:consumer
 
       - name: Check package
         run: npm run package:check
@@ -128,7 +131,7 @@ jobs:
 
       - name: Set up npm
         run: |
-          npm install --global --ignore-scripts corepack@0.35.0
+          node scripts/install-corepack.mjs
           corepack enable npm
           corepack install
           npm --version
