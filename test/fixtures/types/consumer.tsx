@@ -90,7 +90,13 @@ const galleryProps: GalleryProps<CustomImage> = {
   onSelect,
   tileViewportStyle: customStyle,
   thumbnailStyle: styleProp,
-  tagStyle: ({ item }) => ({ zIndex: item.rating }),
+  tagStyle: ({ item }) => ({
+    width: item.scaledWidth,
+    height: item.scaledHeight,
+    maxWidth: item.viewportWidth,
+    marginLeft: item.marginLeft,
+    zIndex: item.rating,
+  }),
   thumbnailImageComponent: CustomThumbnail,
 };
 
