@@ -97,9 +97,9 @@ export interface GalleryProps<T extends Image = Image> {
   margin?: number;
   defaultContainerWidth?: number;
   onClick?: EventHandler<T>;
-  tileViewportStyle?: StyleProp<T>;
-  thumbnailStyle?: StyleProp<T>;
-  tagStyle?: StyleProp<T>;
+  tileViewportStyle?: StyleProp<ImageExtended<T>>;
+  thumbnailStyle?: StyleProp<ImageExtended<T>>;
+  tagStyle?: StyleProp<ImageExtended<T>>;
   thumbnailImageComponent?: ComponentType<
     ThumbnailImageProps<ImageExtended<T>>
   >;

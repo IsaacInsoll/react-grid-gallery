@@ -31,6 +31,8 @@ The maintained fork corrects several public declarations without intending
 runtime behavior changes:
 
 - `StyleFunction<T>` preserves custom image fields in its `item` context.
+- `GalleryProps` style callbacks receive `ImageExtended<T>`, matching the
+  custom image fields and calculated layout fields supplied at runtime.
 - `ImageProps.tileViewportStyle`, `thumbnailStyle`, and `tagStyle` are optional,
   matching the existing internal defaults.
 - `ImageProps.isSelectable` remains a required boolean because `Gallery` always
