@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { buildLayout } from '../../src';
 import { thumbnail, tileViewport, getStyle } from '../../src/styles';
 import type { ImageExtended } from '../../src';
 
@@ -69,10 +70,66 @@ describe('styles', () => {
       expect(result).toEqual({
         cursor: 'pointer',
         maxWidth: 'none',
-        height: 68,
-        marginLeft: -8,
+        height: 76,
+        marginLeft: -6,
         marginTop: 0,
-        width: 34,
+        width: 38,
+      });
+    });
+
+    it('should inset a selected rescaled image without cropping it', () => {
+      const [[item]] = buildLayout([{ ...baseItem, isSelected: true }], {
+        containerWidth: 50,
+        rowHeight: 100,
+        margin: 0,
+      });
+
+      const result = thumbnail({ item });
+
+      expect(result).toEqual({
+        cursor: 'pointer',
+        maxWidth: 'none',
+        height: 26,
+        marginLeft: 0,
+        marginTop: 0,
+        width: 26,
+      });
+    });
+
+    it('should keep selected panoramic rows visible with nonnegative styles', () => {
+      const [[item]] = buildLayout(
+        [
+          {
+            src: 'panorama',
+            width: 6000,
+            height: 500,
+            isSelected: true,
+          },
+        ],
+        { containerWidth: 320, rowHeight: 180, margin: 2 },
+      );
+
+      expect(item).toEqual(
+        expect.objectContaining({
+          scaledWidth: 316,
+          scaledHeight: 26,
+          viewportWidth: 316,
+          marginLeft: 0,
+        }),
+      );
+      expect(thumbnail({ item })).toEqual({
+        cursor: 'pointer',
+        maxWidth: 'none',
+        height: 25,
+        marginLeft: 0,
+        marginTop: -6,
+        width: 304,
+      });
+      expect(tileViewport({ item })).toEqual({
+        width: 304,
+        height: 14,
+        overflow: 'hidden',
+        margin: 6,
       });
     });
   });

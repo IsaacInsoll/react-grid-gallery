@@ -33,6 +33,14 @@ const rotationTransformMap: Record<number, string> = {
 
 const SELECTION_MARGIN = 16;
 
+const getSelectionMargin = (item: ImageExtended) =>
+  Math.min(
+    SELECTION_MARGIN,
+    Math.floor(
+      Math.max(0, Math.min(item.scaledHeight, item.viewportWidth)) / 4,
+    ),
+  );
+
 export const gallery: CSSProperties = {
   display: 'flex',
   flexWrap: 'wrap',
@@ -54,16 +62,19 @@ export const thumbnail = ({ item }: { item: ImageExtended }): CSSProperties => {
   };
 
   if (item.isSelected) {
-    const ratio = item.scaledWidth / item.scaledHeight;
-    const viewportHeight = item.scaledHeight - SELECTION_MARGIN * 2;
-    const viewportWidth = item.viewportWidth - SELECTION_MARGIN * 2;
+    const selectionMargin = getSelectionMargin(item);
+    const selectionInset = selectionMargin * 2;
+    const ratio =
+      item.scaledHeight > 0 ? item.scaledWidth / item.scaledHeight : 1;
+    const viewportHeight = item.scaledHeight - selectionInset;
+    const viewportWidth = item.viewportWidth - selectionInset;
 
     let height, width;
     if (item.scaledWidth > item.scaledHeight) {
-      width = item.scaledWidth - SELECTION_MARGIN * 2;
+      width = item.scaledWidth - selectionInset;
       height = Math.floor(width / ratio);
     } else {
-      height = item.scaledHeight - SELECTION_MARGIN * 2;
+      height = item.scaledHeight - selectionInset;
       width = Math.floor(height * ratio);
     }
 
@@ -95,9 +106,10 @@ export const tileViewport = ({
     styles.backgroundPosition = 'center center';
   }
   if (item.isSelected) {
-    styles.width = item.viewportWidth - SELECTION_MARGIN * 2;
-    styles.height = item.scaledHeight - SELECTION_MARGIN * 2;
-    styles.margin = SELECTION_MARGIN;
+    const selectionMargin = getSelectionMargin(item);
+    styles.width = item.viewportWidth - selectionMargin * 2;
+    styles.height = item.scaledHeight - selectionMargin * 2;
+    styles.margin = selectionMargin;
   }
   return styles;
 };

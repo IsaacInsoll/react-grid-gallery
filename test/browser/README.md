@@ -27,14 +27,24 @@ produce host-specific screenshots.
 
 ## Baseline Provenance
 
-The migration seeded 17 Playwright screenshots from the inherited
+The migration originally seeded 17 Playwright screenshots from the inherited
 Jest/Puppeteer suite, then compared them at zero tolerance in the pinned
-Playwright container. Sixteen passed byte-for-byte and remain the inherited PNG
-files, providing direct evidence that the migration preserved their rendering.
+Playwright container. At that stage, sixteen passed byte-for-byte and were
+retained, providing direct evidence that the test migration preserved their
+rendering.
 
-Only `tags.png` was re-recorded. Its reviewed diff was confined to antialiased
-edges around the default tag pills after moving from Chrome 117 to Chromium 151. The gallery layout, colors, and content were unchanged. Do not regenerate
-the other baselines merely to normalize PNG encoding or metadata.
+Only `tags.png` was re-recorded during the browser-tool migration. Its reviewed
+diff was confined to antialiased edges around the default tag pills after
+moving from Chrome 117 to Chromium 151. The gallery layout, colors, and content
+were unchanged at that stage.
+
+The first-release row-justification correction intentionally regenerated 16
+layout-sensitive inherited baselines in the same pinned Chromium environment.
+Overflowing rows are shorter because their images are proportionally rescaled
+instead of horizontally cropped. `transparent.png` remained byte-identical.
+The new `row-justification.png` uses deterministic patterned SVGs with visible
+edge markers, including a selected tile, to make future cropping regressions
+obvious.
 
 Review every intentional baseline update alongside its diff and update the
 Playwright package, container image, browser, and affected screenshots together

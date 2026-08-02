@@ -8,6 +8,15 @@ history is preserved as the primary authorship record.
 Isaac Insoll maintains the scoped fork. PICR is the open-source project in which
 later fixes were developed and validated before being contributed here.
 
+## Maintained Fork Credits
+
+- [Olli-Pekka Niskanen](https://github.com/opniskanen) for correcting justified
+  row fitting so complete images are rescaled rather than horizontally cropped,
+  contributed through [PICR PR #73](https://github.com/IsaacInsoll/PICR/pull/73).
+  The [original commit](https://github.com/IsaacInsoll/PICR/commit/5d8d5f0e72a22d93ac8674efa8cb81a1881fafdb)
+  was ported with his
+  [explicit permission](https://github.com/IsaacInsoll/PICR/issues/81#issuecomment-5113052332).
+
 ## Original Project Credits
 
 - [itoldya](https://github.com/itoldya) for the large codebase overhaul that

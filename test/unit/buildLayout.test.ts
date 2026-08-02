@@ -36,13 +36,19 @@ describe('buildLayout', () => {
     expect(rows).toEqual([]);
   });
 
-  it('should not modify passed images array', () => {
-    const images = [image100x100];
-    const options = { containerWidth: 100 };
+  it('should not modify passed image objects', () => {
+    const images = [
+      { ...image100x100, src: 'first' },
+      { ...image100x100, src: 'second' },
+    ];
+    const originalImages = structuredClone(images);
+    const options = { containerWidth: 150, rowHeight: 100, margin: 0 };
 
     const rows = buildLayout(images, options);
 
-    expect(rows).not.toBe(images);
+    expect(images).toEqual(originalImages);
+    expect(rows[0][0]).not.toBe(images[0]);
+    expect(rows[0][1]).not.toBe(images[1]);
   });
 
   it('should return custom image attributes', () => {
@@ -92,7 +98,7 @@ describe('buildLayout', () => {
     ]);
   });
 
-  it("should compress image and calculate cut off when it's wider the container", () => {
+  it('should rescale an oversized single-image row without cropping', () => {
     const images = [image100x100];
     const options = { containerWidth: 50, rowHeight: 100, margin: 0 };
 
@@ -101,14 +107,16 @@ describe('buildLayout', () => {
     expect(rows).toEqual([
       [
         expect.objectContaining({
+          scaledWidth: 50,
+          scaledHeight: 50,
           viewportWidth: 50,
-          marginLeft: -25,
+          marginLeft: 0,
         }),
       ],
     ]);
   });
 
-  it('should build a single row when images fit into it', () => {
+  it('should distribute rounding pixels while filling the container exactly', () => {
     const images = [image100x100, image100x100, image100x100];
     const options = { containerWidth: 201, rowHeight: 100, margin: 0 };
 
@@ -116,10 +124,57 @@ describe('buildLayout', () => {
 
     expect(rows).toEqual([
       [
-        expect.objectContaining({ marginLeft: -16 }),
-        expect.objectContaining({ marginLeft: -16 }),
-        expect.objectContaining({ marginLeft: -16 }),
+        expect.objectContaining({
+          scaledWidth: 67,
+          scaledHeight: 67,
+          viewportWidth: 67,
+          marginLeft: 0,
+        }),
+        expect.objectContaining({
+          scaledWidth: 67,
+          scaledHeight: 67,
+          viewportWidth: 67,
+          marginLeft: 0,
+        }),
+        expect.objectContaining({
+          scaledWidth: 67,
+          scaledHeight: 67,
+          viewportWidth: 67,
+          marginLeft: 0,
+        }),
       ],
+    ]);
+  });
+
+  it('should not overflow a fractional container width', () => {
+    const images = [image100x100, image100x100, image100x100];
+    const options = { containerWidth: 201.5, rowHeight: 100, margin: 0 };
+
+    const [row] = buildLayout(images, options);
+    const occupiedWidth = row.reduce(
+      (width, item) => width + item.scaledWidth,
+      0,
+    );
+
+    expect(occupiedWidth).toBe(201);
+    expect(occupiedWidth).toBeLessThanOrEqual(options.containerWidth);
+    expect(options.containerWidth - occupiedWidth).toBeLessThan(1);
+  });
+
+  it('should not produce negative dimensions when margins exceed the container', () => {
+    const [row] = buildLayout([image100x100], {
+      containerWidth: 3,
+      rowHeight: 100,
+      margin: 2,
+    });
+
+    expect(row).toEqual([
+      expect.objectContaining({
+        scaledWidth: 0,
+        scaledHeight: 0,
+        viewportWidth: 0,
+        marginLeft: 0,
+      }),
     ]);
   });
 
@@ -132,6 +187,25 @@ describe('buildLayout', () => {
     expect(rows.length).toEqual(2);
   });
 
+  it('should preserve row membership, image order, and maxRows behavior', () => {
+    const images = ['first', 'second', 'third', 'fourth', 'fifth'].map(
+      (src) => ({ ...image100x100, src }),
+    );
+    const options = {
+      containerWidth: 200,
+      rowHeight: 100,
+      margin: 0,
+      maxRows: 2,
+    };
+
+    const rows = buildLayout(images, options);
+
+    expect(rows.map((row) => row.map(({ src }) => src))).toEqual([
+      ['first', 'second'],
+      ['third', 'fourth'],
+    ]);
+  });
+
   it('should build multiple rows when images could fit into a single row but also the margin is specified', () => {
     const images = [image100x100, image100x100, image100x100];
     const options = { containerWidth: 200, rowHeight: 100, margin: 5 };
@@ -141,12 +215,16 @@ describe('buildLayout', () => {
     expect(rows).toEqual([
       [
         expect.objectContaining({
-          marginLeft: -5,
+          scaledWidth: 90,
+          scaledHeight: 90,
           viewportWidth: 90,
+          marginLeft: 0,
         }),
         expect.objectContaining({
-          marginLeft: -5,
+          scaledWidth: 90,
+          scaledHeight: 90,
           viewportWidth: 90,
+          marginLeft: 0,
         }),
       ],
       [
@@ -155,6 +233,65 @@ describe('buildLayout', () => {
           viewportWidth: 100,
         }),
       ],
+    ]);
+  });
+
+  it('should rescale mixed aspect ratios and account for margins', () => {
+    const images = [
+      { src: 'landscape', width: 400, height: 300 },
+      { src: 'square', width: 300, height: 300 },
+      { src: 'portrait', width: 200, height: 300 },
+    ];
+    const options = { containerWidth: 503, rowHeight: 180, margin: 2 };
+
+    const [row] = buildLayout(images, options);
+    const occupiedWidth = row.reduce(
+      (width, item) => width + item.scaledWidth + options.margin * 2,
+      0,
+    );
+
+    expect(row).toEqual([
+      expect.objectContaining({
+        src: 'landscape',
+        scaledWidth: 219,
+        scaledHeight: 163,
+      }),
+      expect.objectContaining({
+        src: 'square',
+        scaledWidth: 163,
+        scaledHeight: 163,
+      }),
+      expect.objectContaining({
+        src: 'portrait',
+        scaledWidth: 109,
+        scaledHeight: 163,
+      }),
+    ]);
+    expect(occupiedWidth).toBe(options.containerWidth);
+    expect(row.every((item) => item.viewportWidth === item.scaledWidth)).toBe(
+      true,
+    );
+    expect(row.every((item) => item.marginLeft === 0)).toBe(true);
+  });
+
+  it('should preserve an underfilled final row at the target height', () => {
+    const images = [
+      { ...image100x100, src: 'first' },
+      { ...image100x100, src: 'second' },
+      { ...image100x100, src: 'last' },
+    ];
+    const options = { containerWidth: 200, rowHeight: 100, margin: 0 };
+
+    const rows = buildLayout(images, options);
+
+    expect(rows[1]).toEqual([
+      expect.objectContaining({
+        src: 'last',
+        scaledWidth: 100,
+        scaledHeight: 100,
+        viewportWidth: 100,
+        marginLeft: 0,
+      }),
     ]);
   });
 

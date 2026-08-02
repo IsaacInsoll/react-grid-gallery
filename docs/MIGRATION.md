@@ -53,6 +53,25 @@ const Thumbnail = ({ imageProps }: ThumbnailImageProps) => {
 };
 ```
 
+## Justified Row Sizing
+
+The maintained fork incorporates the row-fitting correction contributed by
+[Olli-Pekka Niskanen](https://github.com/opniskanen) in
+[PICR PR #73](https://github.com/IsaacInsoll/PICR/pull/73). Overflowing rows
+are proportionally rescaled to the container instead of retaining `rowHeight`
+and horizontally cropping each image.
+
+As a result, `rowHeight` is now a target: an overflowing row may render shorter
+so the complete image content remains visible. This applies to overflowing
+final and single-image rows. Underfilled final rows retain their target height
+and natural scaled widths. Row membership, image order, and `maxRows` behavior
+are unchanged.
+
+Style callbacks still receive `ImageExtended.marginLeft` for compatibility,
+but rescaled rows now report `0`. Consumers that used its former negative value
+to infer cropping should instead use `scaledWidth`, `scaledHeight`, and
+`viewportWidth` directly.
+
 ## Linked Tiles
 
 The maintained fork adds optional `Image.href` support, preserving linked tile
