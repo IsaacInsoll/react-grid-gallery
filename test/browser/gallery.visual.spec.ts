@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import type { Page } from '@playwright/test';
+import type { Page, TestInfo } from '@playwright/test';
 
 const openScenario = async (page: Page, scenario = 'default') => {
   await page.goto(`/?scenario=${scenario}`);
@@ -19,11 +19,55 @@ const settleLayout = async (page: Page) => {
   );
 };
 
+const attachParityFailure = async (
+  testInfo: TestInfo,
+  unlinkedScreenshot: Buffer,
+  linkedScreenshot: Buffer,
+) => {
+  if (linkedScreenshot.equals(unlinkedScreenshot)) return;
+
+  await Promise.all([
+    testInfo.attach('unlinked-gallery.png', {
+      body: unlinkedScreenshot,
+      contentType: 'image/png',
+    }),
+    testInfo.attach('linked-gallery.png', {
+      body: linkedScreenshot,
+      contentType: 'image/png',
+    }),
+  ]);
+};
+
 test.describe('Gallery visual regression', () => {
   test('renders with React 18', async ({ page }) => {
     await openScenario(page);
 
     await expect(page).toHaveScreenshot('default.png');
+  });
+
+  test('renders linked viewports identically to unlinked viewports', async ({
+    page,
+  }, testInfo) => {
+    await openScenario(page);
+    const unlinkedScreenshot = await page.screenshot({
+      animations: 'disabled',
+      caret: 'hide',
+      scale: 'css',
+    });
+
+    await openScenario(page, 'linked');
+    const linkedScreenshot = await page.screenshot({
+      animations: 'disabled',
+      caret: 'hide',
+      scale: 'css',
+    });
+
+    // markReady gates image loading and two animation frames; neither capture
+    // focuses a tile, so exact PNG parity is deterministic in pinned Chromium.
+    await attachParityFailure(testInfo, unlinkedScreenshot, linkedScreenshot);
+
+    // Keep default.png single-writer while still enforcing unfocused parity.
+    expect(linkedScreenshot).toEqual(unlinkedScreenshot);
   });
 
   test('responds to viewport resizing', async ({ page }) => {

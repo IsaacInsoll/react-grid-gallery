@@ -57,6 +57,15 @@ export const Image = <T extends ImageExtended>({
     tagStyle,
   };
 
+  const thumbnailElement = ThumbnailImageComponent ? (
+    <ThumbnailImageComponent
+      {...thumbnailImageProps}
+      imageProps={thumbnailProps}
+    />
+  ) : (
+    <img {...imageElementProps} />
+  );
+
   return (
     <div
       className="ReactGridGallery_tile"
@@ -115,21 +124,31 @@ export const Image = <T extends ImageExtended>({
         })}
       />
 
-      <div
-        className="ReactGridGallery_tile-viewport"
-        data-testid="grid-gallery-item_viewport"
-        style={getStyle(tileViewportStyle, styles.tileViewport, styleContext)}
-        onClick={handleViewportClick}
-      >
-        {ThumbnailImageComponent ? (
-          <ThumbnailImageComponent
-            {...thumbnailImageProps}
-            imageProps={thumbnailProps}
-          />
-        ) : (
-          <img {...imageElementProps} />
-        )}
-      </div>
+      {item.href ? (
+        <a
+          className="ReactGridGallery_tile-viewport"
+          data-testid="grid-gallery-item_viewport"
+          href={item.href}
+          style={{
+            display: 'block',
+            color: 'inherit',
+            textDecoration: 'none',
+            ...getStyle(tileViewportStyle, styles.tileViewport, styleContext),
+          }}
+          onClick={handleViewportClick}
+        >
+          {thumbnailElement}
+        </a>
+      ) : (
+        <div
+          className="ReactGridGallery_tile-viewport"
+          data-testid="grid-gallery-item_viewport"
+          style={getStyle(tileViewportStyle, styles.tileViewport, styleContext)}
+          onClick={handleViewportClick}
+        >
+          {thumbnailElement}
+        </div>
+      )}
       {item.thumbnailCaption && (
         <div
           className="ReactGridGallery_tile-description"

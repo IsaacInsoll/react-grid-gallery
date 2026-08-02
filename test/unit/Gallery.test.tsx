@@ -3,7 +3,11 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import { renderToString } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Gallery } from '../../src/Gallery';
-import type { ThumbnailImageProps } from '../../src/types';
+import type {
+  EventHandler,
+  ImageExtended,
+  ThumbnailImageProps,
+} from '../../src/types';
 
 const image1 = {
   src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Apples.jpg/320px-Apples.jpg',
@@ -15,6 +19,11 @@ const image2 = {
   src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Bananas.jpg/320px-Bananas.jpg',
   width: 320,
   height: 213,
+};
+
+const linkedImage = {
+  ...image1,
+  href: '/?scenario=linked-destination',
 };
 
 const getItems = () => screen.getAllByTestId('grid-gallery-item');
@@ -96,6 +105,32 @@ describe('Gallery Component', () => {
     expect(getItemThumbnail()).toHaveClass('lazyload');
   });
 
+  it('should render a custom thumbnail inside a linked viewport without forwarding href to the image', () => {
+    const thumbnailImageComponent = (
+      props: ThumbnailImageProps<ImageExtended<typeof linkedImage>>,
+    ) => (
+      <img
+        {...props.imageProps}
+        title={props.imageProps.title ?? undefined}
+        className="linked-custom-thumbnail"
+      />
+    );
+
+    render(
+      <Gallery
+        images={[linkedImage]}
+        thumbnailImageComponent={thumbnailImageComponent}
+      />,
+    );
+
+    const viewport = getItemViewport();
+    const thumbnail = getItemThumbnail();
+    expect(viewport.tagName).toBe('A');
+    expect(viewport).toContainElement(thumbnail);
+    expect(thumbnail).toHaveClass('linked-custom-thumbnail');
+    expect(thumbnail).not.toHaveAttribute('href');
+  });
+
   it('should set styles provided via thumbnailStyle prop on thumbnail element', () => {
     const thumbnailStyle = { background: 'black', opacity: 0.42 };
 
@@ -144,7 +179,72 @@ describe('Gallery Component', () => {
     expect(getItems().length).toEqual(2);
   });
 
+  it('should render linked viewports on the server', () => {
+    renderStatic(
+      <Gallery images={[linkedImage]} defaultContainerWidth={400} />,
+    );
+
+    expect(getItemViewport().tagName).toBe('A');
+    expect(getItemViewport()).toHaveAttribute('href', linkedImage.href);
+  });
+
   describe('Image Options', () => {
+    it('should preserve the div viewport for an image without href', () => {
+      render(<Gallery images={[image1]} />);
+
+      expect(getItemViewport().tagName).toBe('DIV');
+      expect(getItemViewport()).not.toHaveAttribute('href');
+    });
+
+    it('should preserve the div viewport for an empty href', () => {
+      render(<Gallery images={[{ ...image1, href: '' }]} />);
+
+      expect(getItemViewport().tagName).toBe('DIV');
+      expect(getItemViewport()).not.toHaveAttribute('href');
+    });
+
+    it('should render a linked viewport without wrapping sibling controls and content', () => {
+      const image = {
+        ...linkedImage,
+        tags: [{ value: 'Fruit', title: 'Fruit' }],
+        customOverlay: <span>Custom Overlay</span>,
+        thumbnailCaption: <span>Thumbnail Caption</span>,
+      };
+
+      render(<Gallery images={[image]} />);
+
+      const viewport = getItemViewport();
+      expect(viewport.tagName).toBe('A');
+      expect(viewport).toHaveAttribute('href', linkedImage.href);
+      expect(viewport.style.display).toBe('block');
+      expect(viewport.style.color).toBe('inherit');
+      expect(viewport.style.textDecoration).toBe('none');
+      expect(viewport).toContainElement(getItemThumbnail());
+      expect(viewport).not.toContainElement(getItemCheckButton());
+      expect(viewport).not.toContainElement(screen.getByText('Fruit'));
+      expect(viewport).not.toContainElement(screen.getByText('Custom Overlay'));
+      expect(viewport).not.toContainElement(
+        screen.getByText('Thumbnail Caption'),
+      );
+    });
+
+    it('should let a linked viewport click handler prevent navigation', () => {
+      const handleClick = vi.fn<EventHandler<typeof linkedImage>>(
+        (_index, _item, event) => {
+          event.preventDefault();
+        },
+      );
+
+      render(<Gallery images={[linkedImage]} onClick={handleClick} />);
+
+      expect(fireEvent.click(getItemViewport())).toBe(false);
+      expect(handleClick).toHaveBeenCalledWith(
+        0,
+        linkedImage,
+        expect.objectContaining({ defaultPrevented: true }),
+      );
+    });
+
     it('should set thumbnail image src attribute based on src prop', () => {
       render(<Gallery images={[image1]} />);
 

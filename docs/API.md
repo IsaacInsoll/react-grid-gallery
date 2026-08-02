@@ -93,9 +93,94 @@ be spread into the native element.
 | `customOverlay`    | `ReactNode`        | Overlay rendered on hover                  |
 | `thumbnailCaption` | `ReactNode`        | Caption rendered below the thumbnail       |
 | `orientation`      | `number`           | EXIF orientation value                     |
+| `href`             | `string`           | Makes the tile viewport a native link      |
 
 `ImageTag` has a required `value: ReactNode`, required `title: string`, and an
 optional `key: string | number`.
+
+### Linked Tiles
+
+A non-empty `href` renders that image's viewport as a native anchor. No click
+handler is required for ordinary links:
+
+```tsx
+const images: Image[] = [
+  {
+    src: '/albums/landscapes.jpg',
+    width: 800,
+    height: 600,
+    href: '/albums/landscapes',
+  },
+];
+
+<Gallery images={images} />;
+```
+
+Images with no `href`, or with an empty string, keep the inherited `div`
+markup. A single gallery can therefore mix linked and unlinked tiles — for
+example, linking photos while leaving video tiles to open a lightbox through
+`onClick`.
+
+#### Activation
+
+| Activation                      | Calls `Gallery.onClick`  | Default behavior        |
+| ------------------------------- | ------------------------ | ----------------------- |
+| Plain left click                | Yes                      | Follows the link        |
+| Enter on the focused tile       | Yes                      | Follows the link        |
+| Ctrl/Cmd/Shift/Alt + left click | Yes, with modifier flags | Native browser behavior |
+| Middle click                    | No                       | Opens a new tab         |
+
+Anything that calls `Gallery.onClick` follows the link afterwards unless the
+callback calls `event.preventDefault()`.
+
+Middle clicks are the exception, and the reason is worth knowing: the gallery
+listens for `click`, and browsers dispatch `auxclick` for non-primary buttons.
+Middle-click activations therefore never reach `Gallery.onClick` at all. Code
+that counts tile activations for analytics will not observe them.
+
+#### Keyboard And Focus
+
+A linked viewport is a real anchor, so it joins the tab order and can be
+activated with Enter. Unlinked viewports remain non-focusable `div` elements,
+preserving the inherited behavior exactly. Adding `href` to an existing gallery
+therefore adds its tiles to the tab order.
+
+#### Containment
+
+The built-in selection button, tags, overlays, and thumbnail caption are
+siblings of the viewport and remain outside the anchor, so they keep working
+independently of the link.
+
+A custom thumbnail is different: it renders _inside_ the anchor. It must not
+contain another anchor, a button, or any other interactive descendant, because
+nested interactive elements are invalid HTML and browsers will restructure
+them. When a custom thumbnail needs to display something that is normally a
+link or button, render a static element such as a `span` for the linked case
+and let the surrounding tile anchor provide the navigation.
+
+#### Client-Side Routers
+
+The gallery is router-neutral and does not prevent native navigation
+automatically. To use client-side routing, intercept unmodified clicks and call
+your router after preventing the browser navigation:
+
+```tsx
+<Gallery
+  images={images}
+  onClick={(_index, image, event) => {
+    if (
+      image.href &&
+      !event.metaKey &&
+      !event.ctrlKey &&
+      !event.shiftKey &&
+      !event.altKey
+    ) {
+      event.preventDefault();
+      navigate(image.href);
+    }
+  }}
+/>
+```
 
 ## Style Props
 

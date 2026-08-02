@@ -53,6 +53,27 @@ const Thumbnail = ({ imageProps }: ThumbnailImageProps) => {
 };
 ```
 
+## Linked Tiles
+
+The maintained fork adds optional `Image.href` support, preserving linked tile
+behavior developed in
+[PICR](https://github.com/IsaacInsoll/PICR/commit/9646fb329e18f5ffad72de1630bc3d48f4f46aa7).
+A non-empty value renders the tile viewport as a native anchor; images without
+one keep the inherited `div` markup.
+
+Adding `href` changes a plain viewport click into navigation. Applications
+using `Gallery.onClick` for selection, a lightbox, or client-side routing must
+call `event.preventDefault()` when they intend to remain on the current page.
+The built-in check-button selection control is outside the anchor and remains
+unchanged. Modified primary clicks still call `Gallery.onClick` with their
+modifier flags. The gallery listens for `click`; browsers dispatch `auxclick`
+for middle buttons, so those activations bypass `Gallery.onClick` and retain
+native behavior.
+
+Custom thumbnail components are rendered inside the linked viewport. They must
+not render anchors, buttons, or other interactive descendants when `href` is
+set.
+
 ## Historical Upgrades
 
 Applications still on upstream `0.5.x` should first review the original
