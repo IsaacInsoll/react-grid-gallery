@@ -40,7 +40,10 @@ const getRow = <T extends Image = Image>(
   const protrudingWidth = totalRowWidth - containerWidth;
   if (row.length > 0 && protrudingWidth > 0) {
     const marginsWidth = row.length * imgMargin;
-    const availableWidth = containerWidth - marginsWidth;
+    const availableWidth = Math.max(
+      0,
+      Math.floor(containerWidth - marginsWidth),
+    );
     const naturalWidth = totalRowWidth - marginsWidth;
     const scale = availableWidth / naturalWidth;
     const scaledRowHeight = Math.floor(rowHeight * scale);

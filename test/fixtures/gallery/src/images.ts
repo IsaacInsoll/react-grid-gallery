@@ -3,6 +3,30 @@ const colorImage = (hex: string) =>
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1" preserveAspectRatio="none"><path fill="#${hex}" d="M0 0h1v1H0z"/></svg>`,
   )}`;
 
+const edgeMarkedImage = (width: number, height: number, fill: string) =>
+  `data:image/svg+xml,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${String(width)} ${String(height)}" preserveAspectRatio="none"><path fill="${fill}" d="M0 0h${String(width)}v${String(height)}H0z"/><path fill="#111" d="M0 0h24v${String(height)}H0zM${String(width - 24)} 0h24v${String(height)}h-24z"/><path stroke="#fff" stroke-width="6" d="M${String(width / 2)} 0v${String(height)}M0 ${String(height / 2)}h${String(width)}"/></svg>`,
+  )}`;
+
+export const justificationImages = [
+  {
+    src: edgeMarkedImage(400, 300, '#e14f5d'),
+    width: 400,
+    height: 300,
+    isSelected: true,
+  },
+  {
+    src: edgeMarkedImage(300, 300, '#ffc349'),
+    width: 300,
+    height: 300,
+  },
+  {
+    src: edgeMarkedImage(200, 300, '#1873d3'),
+    width: 200,
+    height: 300,
+  },
+];
+
 export const images = [
   {
     src: colorImage('E14F5D'),

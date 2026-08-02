@@ -91,6 +91,40 @@ test.describe('Gallery visual regression', () => {
     }
   });
 
+  test('rescales justified rows without cropping image edges', async ({
+    page,
+  }) => {
+    await openScenario(page, 'row-justification');
+
+    const geometry = await page
+      .locator('.ReactGridGallery_tile-viewport')
+      .evaluateAll((viewports) =>
+        viewports.map((viewport) => {
+          const image = viewport.querySelector('img');
+          if (!image) throw new Error('Expected a thumbnail image.');
+
+          const viewportBounds = viewport.getBoundingClientRect();
+          const imageBounds = image.getBoundingClientRect();
+          return {
+            imageLeft: imageBounds.left,
+            imageRight: imageBounds.right,
+            marginLeft: getComputedStyle(image).marginLeft,
+            viewportHeight: viewportBounds.height,
+            viewportLeft: viewportBounds.left,
+            viewportRight: viewportBounds.right,
+          };
+        }),
+      );
+
+    for (const item of geometry) {
+      expect(item.imageLeft).toBeGreaterThanOrEqual(item.viewportLeft);
+      expect(item.imageRight).toBeLessThanOrEqual(item.viewportRight);
+      expect(item.marginLeft).toBe('0px');
+    }
+    expect(geometry[1]?.viewportHeight).toBe(163);
+    await expect(page).toHaveScreenshot('row-justification.png');
+  });
+
   for (const [name, scenario, snapshot] of [
     ['uses rowHeight', 'row-height', 'row-height-100.png'],
     ['uses margin', 'margin', 'margin-10.png'],

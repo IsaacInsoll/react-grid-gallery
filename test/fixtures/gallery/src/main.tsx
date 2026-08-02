@@ -3,7 +3,7 @@ import { createRoot, hydrateRoot } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 import { Gallery } from '@gallery';
 import type { GalleryProps, ThumbnailImageProps } from '@gallery';
-import { images } from './images';
+import { images, justificationImages } from './images';
 
 declare const __REACT_VERSION__: string;
 
@@ -115,6 +115,9 @@ const getGalleryProps = (): GalleryProps => {
     case 'decimal-width':
       rootElement.style.width = '474.7px';
       return { images };
+    case 'row-justification':
+      rootElement.style.width = '503px';
+      return { images: justificationImages, rowHeight: 180, margin: 2 };
     case 'custom-thumbnail':
       return { images, thumbnailImageComponent: CustomThumbnail };
     case 'linked':

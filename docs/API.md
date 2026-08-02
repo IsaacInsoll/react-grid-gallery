@@ -38,6 +38,11 @@ remain available in callbacks and style functions.
 The containing element must have a width. `defaultContainerWidth` is useful for
 server rendering before `ResizeObserver` can report the browser width.
 
+`rowHeight` is a target rather than a guaranteed height. A row that overflows
+the container at that height is proportionally rescaled so every image remains
+fully visible. This includes an overflowing final or single-image row. An
+underfilled final row keeps the target height and its natural scaled widths.
+
 ### Selection
 
 ```tsx
@@ -214,6 +219,9 @@ const flat = buildLayoutFlat(images, { containerWidth: 960 });
 `buildLayout` returns `ImageExtendedRow<T>[]`; `buildLayoutFlat` returns one
 flattened `ImageExtendedRow<T>`. `ImageExtended<T>` adds `scaledWidth`,
 `scaledHeight`, `viewportWidth`, and `marginLeft` to the original image.
+`marginLeft` remains available for compatibility but is `0` for rescaled rows;
+the gallery now fits them by changing their dimensions instead of applying a
+negative horizontal cropping offset.
 
 ## `CheckButton`
 
