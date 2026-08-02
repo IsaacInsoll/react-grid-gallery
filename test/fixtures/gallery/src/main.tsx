@@ -19,6 +19,33 @@ const tags = [
   { value: '     ', title: '     ' },
 ];
 
+const linkedImages = images.map((image, index) => ({
+  ...image,
+  href: `/?scenario=linked-destination&image=${String(index)}`,
+}));
+
+const handleLinkedClick: NonNullable<GalleryProps['onClick']> = (
+  _index,
+  _image,
+  event,
+) => {
+  const isModified =
+    event.button !== 0 ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.shiftKey;
+  document.body.dataset.galleryClick = isModified
+    ? 'modified'
+    : event.detail === 0
+      ? 'keyboard'
+      : 'plain';
+
+  if (!isModified) {
+    event.preventDefault();
+  }
+};
+
 const scenario =
   new URLSearchParams(window.location.search).get('scenario') ?? 'default';
 const rootElement = document.getElementById('root');
@@ -90,6 +117,16 @@ const getGalleryProps = (): GalleryProps => {
       return { images };
     case 'custom-thumbnail':
       return { images, thumbnailImageComponent: CustomThumbnail };
+    case 'linked':
+      return { images: linkedImages, onClick: handleLinkedClick };
+    case 'linked-native':
+      return { images: linkedImages };
+    case 'linked-custom-thumbnail':
+      return {
+        images: linkedImages,
+        onClick: handleLinkedClick,
+        thumbnailImageComponent: CustomThumbnail,
+      };
     default:
       return { images };
   }

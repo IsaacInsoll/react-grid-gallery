@@ -32,12 +32,14 @@ const tags: ImageTag[] = [{ value: 'featured', title: 'Featured' }];
 const image: CustomImage = {
   id: 'image-1',
   rating: 5,
+  href: '/albums/image-1',
   src: '/image.jpg',
   width: 800,
   height: 600,
   tags,
 };
 const images: CustomImage[] = [image];
+const imageHref: string | undefined = image.href;
 
 const onSelect: EventHandler<CustomImage> = (_index, item, event) => {
   const id: string = item.id;
@@ -130,6 +132,7 @@ export {
   checkButtonElement,
   customId,
   galleryElement,
+  imageHref,
   imagePropsWithoutStyles,
   rows,
   styleContext,

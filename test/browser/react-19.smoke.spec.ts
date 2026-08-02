@@ -2,9 +2,16 @@ import { expect, test } from '@playwright/test';
 
 const imagesCount = 24;
 
-for (const [name, scenario, customThumbnailCount] of [
-  ['the default image', 'default', 0],
-  ['a custom thumbnail', 'custom-thumbnail', imagesCount],
+for (const [name, scenario, customThumbnailCount, linkCount] of [
+  ['the default image', 'default', 0, 0],
+  ['a custom thumbnail', 'custom-thumbnail', imagesCount, 0],
+  ['a linked image', 'linked', 0, imagesCount],
+  [
+    'a linked custom thumbnail',
+    'linked-custom-thumbnail',
+    imagesCount,
+    imagesCount,
+  ],
 ] as const) {
   test(`renders and hydrates ${name} with React 19`, async ({ page }) => {
     const errors: string[] = [];
@@ -29,6 +36,9 @@ for (const [name, scenario, customThumbnailCount] of [
     await expect(page.locator('img.custom-thumbnail')).toHaveCount(
       customThumbnailCount,
     );
+    await expect(
+      page.locator('.ReactGridGallery').getByRole('link'),
+    ).toHaveCount(linkCount);
 
     expect(errors).toEqual([]);
   });

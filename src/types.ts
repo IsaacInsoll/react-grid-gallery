@@ -26,6 +26,7 @@ export interface Image {
   customOverlay?: ReactNode;
   thumbnailCaption?: ReactNode;
   orientation?: number;
+  href?: string;
 }
 
 export type ImageExtended<T extends Image = Image> = T & {
