@@ -1,5 +1,10 @@
 # Release Process
 
+> **Pre-release status:** `release-it`, `.github/workflows/release.yml`, the
+> `npm-publish` environment, and npm trusted publishing are not configured yet.
+> This document defines the controls that must land before `1.0.0-rc.0`; progress
+> is tracked in `MODERNIZATION_PLAN.md`.
+
 `@picr/react-grid-gallery` is published only by the maintainer through GitHub
 Actions. Do not run `npm publish` from a development machine or add a long-lived
 npm publishing token.
@@ -43,5 +48,19 @@ changelog guard. Pushing the release tag starts the publishing workflow. GitHub
 OIDC stages the package at npm, and npm 2FA approval is the single human gate
 before it becomes public.
 
-Emergency recovery must be documented. Prefer restoring trusted publishing over
-creating a long-lived token.
+## Emergency Recovery
+
+Restore the trusted-publishing path before releasing whenever practical. If an
+urgent security release cannot wait for that repair:
+
+1. Create a granular npm token limited to this package, publishing, and the
+   shortest practical expiry.
+2. Store it only in the protected `npm-publish` GitHub environment and run the
+   same SHA-pinned workflow, release gates, provenance generation, and npm 2FA
+   approval used by a normal release.
+3. Revoke the token and remove the environment secret immediately after
+   verifying the published package.
+4. Record why trusted publishing was unavailable and the recovery work needed.
+
+Never bypass the workflow with a local publish or retain the recovery token for
+the next release.

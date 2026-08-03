@@ -22,11 +22,17 @@ before installing it. Using the same bootstrap on every Node version avoids
 depending on whichever Corepack release a runtime happens to bundle. CI also
 verifies the packed package on Node 22 and 26.
 
-The project `.npmrc` ignores dependency versions published less than seven days
-ago during routine installs and updates. Dependabot bypasses that age gate for
-security updates. For a manual urgent fix, add only the affected package to a
-temporary `min-release-age-exclude[]=package-name` entry, explain the exception
-in the pull request, and remove it once the fixed version is seven days old.
+The integrity-pinned npm 12.0.2 enforces the project `.npmrc`, which ignores
+dependency versions published less than seven days ago during routine
+resolution and updates. An `Unknown project config "min-release-age"` warning
+means the pinned npm setup above was not completed and the gate is not active.
+An integrity-locked `npm ci` remains reproducible and accepts versions already
+recorded in the lockfile.
+
+Dependabot bypasses the age gate for security updates. For a manual urgent fix,
+add only the affected package to a temporary
+`min-release-age-exclude[]=package-name` entry, explain the exception in the
+pull request, and remove it once the fixed version is seven days old.
 
 ## Checks
 
