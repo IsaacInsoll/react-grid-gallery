@@ -34,6 +34,13 @@ add only the affected package to a temporary
 `min-release-age-exclude[]=package-name` entry, explain the exception in the
 pull request, and remove it once the fixed version is seven days old.
 
+React, React DOM, their type packages, and TypeScript define coordinated
+compatibility axes across the root and test fixtures, so routine Dependabot
+updates are disabled for them. Update those versions deliberately without
+replacing the React 18 or TypeScript 5.5 minimum-version fixtures, and regenerate
+both lockfiles together. Keep root `@types/node` on the Node 22 support floor;
+routine updates within that major remain automated.
+
 ## Checks
 
 Run the checks relevant to your change. Before requesting review, the complete
