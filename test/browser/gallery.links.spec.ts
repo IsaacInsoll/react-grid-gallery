@@ -10,7 +10,7 @@ const getFirstTileLink = (page: Page) =>
   page.locator('.ReactGridGallery').getByRole('link').first();
 
 const expectLinkedDestination = async (newPage: Page) => {
-  await newPage.waitForLoadState();
+  await newPage.waitForURL(/(?:\?|&)scenario=linked-destination(?:&|$)/);
   const url = new URL(newPage.url());
   expect(url.searchParams.get('scenario')).toBe('linked-destination');
   expect(url.searchParams.get('image')).toBe('0');
