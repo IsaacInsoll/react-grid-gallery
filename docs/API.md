@@ -38,9 +38,11 @@ remain available in callbacks and style functions.
 The containing element must have a width. `defaultContainerWidth` is useful for
 server rendering before `ResizeObserver` can report the browser width.
 
-Browser environments must provide `ResizeObserver`; the package does not bundle
-a polyfill. Applications targeting a browser or test environment without a
-native implementation must install a global polyfill before mounting `Gallery`.
+The package does not bundle a `ResizeObserver` polyfill. Without a native
+implementation, the gallery still measures its container once on mount but does
+not react to later container resizes. Install a global polyfill when resize
+responsiveness is required in an environment that lacks it; jsdom-based unit
+tests generally do not need one.
 
 `rowHeight` is a target rather than a guaranteed height. A row that overflows
 the container at that height is proportionally rescaled so every image remains
