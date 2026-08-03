@@ -5,7 +5,29 @@ updates:
     versioning-strategy: increase
     schedule:
       interval: 'monthly'
+    cooldown:
+      default-days: 7
+      semver-major-days: 30
+      semver-minor-days: 7
+      semver-patch-days: 3
     groups:
       npm-dependencies:
+        applies-to: version-updates
         patterns:
           - '*'
+    commit-message:
+      prefix: '⬆️'
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'monthly'
+    cooldown:
+      default-days: 7
+    groups:
+      github-actions:
+        applies-to: version-updates
+        patterns:
+          - '*'
+    commit-message:
+      prefix: '⬆️'

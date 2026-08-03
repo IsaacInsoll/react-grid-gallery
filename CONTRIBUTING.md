@@ -22,6 +22,12 @@ before installing it. Using the same bootstrap on every Node version avoids
 depending on whichever Corepack release a runtime happens to bundle. CI also
 verifies the packed package on Node 22 and 26.
 
+The project `.npmrc` ignores dependency versions published less than seven days
+ago during routine installs and updates. Dependabot bypasses that age gate for
+security updates. For a manual urgent fix, add only the affected package to a
+temporary `min-release-age-exclude[]=package-name` entry, explain the exception
+in the pull request, and remove it once the fixed version is seven days old.
+
 ## Checks
 
 Run the checks relevant to your change. Before requesting review, the complete
@@ -46,6 +52,11 @@ npm run test:browser:container
 Use `npm run test:browser:container:update` only for deliberate, reviewed visual
 baseline changes.
 
+The scheduled security workflow runs `npm run security:audit` and fails on high
+or critical advisories. Pull requests are checked separately for newly
+introduced moderate-or-higher vulnerabilities in runtime and development
+dependencies.
+
 ## Pull Requests
 
 - Keep changes focused and include regression coverage for behavior changes.
@@ -58,3 +69,6 @@ baseline changes.
 Report suspected vulnerabilities privately through
 [GitHub Security Advisories](https://github.com/IsaacInsoll/react-grid-gallery/security/advisories/new),
 not a public issue. See [SECURITY.md](SECURITY.md).
+
+Only the maintainer releases this package. See
+[docs/RELEASING.md](docs/RELEASING.md) for the publishing controls and process.
