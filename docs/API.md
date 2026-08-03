@@ -38,6 +38,10 @@ remain available in callbacks and style functions.
 The containing element must have a width. `defaultContainerWidth` is useful for
 server rendering before `ResizeObserver` can report the browser width.
 
+Browser environments must provide `ResizeObserver`; the package does not bundle
+a polyfill. Applications targeting a browser or test environment without a
+native implementation must install a global polyfill before mounting `Gallery`.
+
 `rowHeight` is a target rather than a guaranteed height. A row that overflows
 the container at that height is proportionally rescaled so every image remains
 fully visible. This includes an overflowing final or single-image row. An
