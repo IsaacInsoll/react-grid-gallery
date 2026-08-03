@@ -20,6 +20,9 @@ another release.
   passes.
 - The release workflow must use the repository's verified Corepack bootstrap
   and integrity-pinned npm version.
+- Trusted publishing must use OIDC without `NODE_AUTH_TOKEN`. Bootstrap or
+  emergency token publishing must set `NODE_AUTH_TOKEN` explicitly only on the
+  publish step; `actions/setup-node` v7 no longer supplies a dummy value.
 - Workflow actions must use full commit SHAs and least-privilege permissions.
 - Only the publishing job may receive `id-token: write`; release operations may
   receive `contents: write` only when required.
