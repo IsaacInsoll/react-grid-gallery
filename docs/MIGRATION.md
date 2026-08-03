@@ -72,6 +72,12 @@ but rescaled rows now report `0`. Consumers that used its former negative value
 to infer cropping should instead use `scaledWidth`, `scaledHeight`, and
 `viewportWidth` directly.
 
+Selected tiles whose shortest rendered dimension is below 64px now reduce the
+default 16px selection inset to at most one quarter of that dimension. This
+keeps the selected viewport and thumbnail dimensions valid for very short
+rescaled rows. It also changes the selection chrome on small tiles that did not
+need row rescaling, such as galleries using a `rowHeight` below 64px.
+
 ## Linked Tiles
 
 The maintained fork adds optional `Image.href` support, preserving linked tile
