@@ -14,6 +14,38 @@ updates:
         applies-to: version-updates
         patterns:
           - '*'
+    # These exact versions define coordinated compatibility axes rather than
+    # ordinary "latest" dependencies. update-types ignores routine updates only;
+    # Dependabot security updates remain eligible.
+    ignore:
+      - dependency-name: 'react'
+        update-types:
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
+          - 'version-update:semver-patch'
+      - dependency-name: 'react-dom'
+        update-types:
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
+          - 'version-update:semver-patch'
+      - dependency-name: '@types/react'
+        update-types:
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
+          - 'version-update:semver-patch'
+      - dependency-name: '@types/react-dom'
+        update-types:
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
+          - 'version-update:semver-patch'
+      - dependency-name: 'typescript'
+        update-types:
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
+          - 'version-update:semver-patch'
+      - dependency-name: '@types/node'
+        update-types:
+          - 'version-update:semver-major'
     commit-message:
       prefix: '⬆️'
 
