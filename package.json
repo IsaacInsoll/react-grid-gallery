@@ -28,6 +28,7 @@
     "watch": "tsdown --watch",
     "build": "tsdown",
     "package:check": "npm run build && node scripts/check-package.mjs",
+    "security:audit": "npm audit --audit-level=high",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "lint": "eslint . --max-warnings 0",
