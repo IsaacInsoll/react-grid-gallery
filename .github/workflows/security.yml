@@ -52,5 +52,5 @@ jobs:
           corepack install
           npm --version
 
-      - name: Audit locked dependencies
+      - name: Audit root and packed-consumer dependencies
         run: npm run security:audit

@@ -41,6 +41,13 @@ replacing the React 18 or TypeScript 5.5 minimum-version fixtures, and regenerat
 both lockfiles together. Keep root `@types/node` on the Node 22 support floor;
 routine updates within that major remain automated.
 
+Vite must match between the root and packed-consumer fixture. Playwright Test
+must match the digest-pinned container and its browser binaries. Update either
+set manually and review any affected browser snapshots. The packed-consumer
+lockfile has separate Dependabot security coverage and is included in
+`npm run security:audit`, but its routine updates remain part of this coordinated
+process.
+
 ## Checks
 
 Run the checks relevant to your change. Before requesting review, the complete
