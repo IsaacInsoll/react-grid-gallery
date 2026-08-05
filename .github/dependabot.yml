@@ -66,6 +66,15 @@ updates:
       - dependency-name: '@types/node'
         update-types:
           - 'version-update:semver-major'
+      - dependency-name: '@testing-library/dom'
+        update-types:
+          - 'version-update:semver-major'
+      - dependency-name: '@testing-library/jest-dom'
+        update-types:
+          - 'version-update:semver-major'
+      - dependency-name: '@testing-library/react'
+        update-types:
+          - 'version-update:semver-major'
     commit-message:
       prefix: '⬆️'
 
