@@ -14,9 +14,9 @@ updates:
         applies-to: version-updates
         patterns:
           - '*'
-    # These exact versions define coordinated compatibility axes rather than
-    # ordinary "latest" dependencies. update-types ignores routine updates only;
-    # Dependabot security updates remain eligible.
+    # These exact versions define coordinated compatibility axes or sensitive
+    # release tooling rather than ordinary "latest" dependencies. update-types
+    # ignores routine updates only; Dependabot security updates remain eligible.
     ignore:
       - dependency-name: 'react'
         update-types:
@@ -54,6 +54,11 @@ updates:
           - 'version-update:semver-minor'
           - 'version-update:semver-patch'
       - dependency-name: '@playwright/test'
+        update-types:
+          - 'version-update:semver-major'
+          - 'version-update:semver-minor'
+          - 'version-update:semver-patch'
+      - dependency-name: 'release-it'
         update-types:
           - 'version-update:semver-major'
           - 'version-update:semver-minor'
