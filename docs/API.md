@@ -109,6 +109,9 @@ be spread into the native element.
 `ImageTag` has a required `value: ReactNode`, required `title: string`, and an
 optional `key: string | number`.
 
+When `caption` is a string, it also becomes the thumbnail image's native
+`title` attribute.
+
 ### Linked Tiles
 
 A non-empty `href` renders that image's viewport as a native anchor. No click
