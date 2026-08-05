@@ -27,7 +27,6 @@ jobs:
       contents: read
     outputs:
       artifact_name: npm-package-${{ steps.metadata.outputs.version }}
-      bootstrap: ${{ steps.metadata.outputs.bootstrap }}
       dist_tag: ${{ steps.metadata.outputs.dist_tag }}
       prerelease: ${{ steps.metadata.outputs.prerelease }}
       tag: ${{ steps.metadata.outputs.tag }}
@@ -105,7 +104,7 @@ jobs:
           retention-days: 1
 
   publish:
-    name: Publish or stage on npm
+    name: Stage package on npm
     if: github.event_name == 'push'
     needs: validate
     runs-on: ubuntu-24.04
@@ -144,18 +143,7 @@ jobs:
         working-directory: ${{ runner.temp }}/release-artifact
         run: sha512sum --check release-package.tgz.sha512
 
-      - name: Bootstrap package on npm
-        if: needs.validate.outputs.bootstrap == 'true'
-        run: >-
-          npm publish "$RUNNER_TEMP/release-artifact/release-package.tgz"
-          --access public
-          --provenance
-          --tag "${{ needs.validate.outputs.dist_tag }}"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_BOOTSTRAP_TOKEN }}
-
       - name: Stage package on npm
-        if: needs.validate.outputs.bootstrap != 'true'
         run: >-
           npm stage publish "$RUNNER_TEMP/release-artifact/release-package.tgz"
           --access public
@@ -187,29 +175,7 @@ jobs:
       - name: Prepare release notes
         run: node scripts/release-notes.mjs "${{ needs.validate.outputs.version }}" > "$RUNNER_TEMP/release-notes.md"
 
-      - name: Verify bootstrap publication
-        if: needs.validate.outputs.bootstrap == 'true'
-        run: >-
-          node scripts/verify-published-package.mjs
-          "${{ needs.validate.outputs.version }}"
-          "${{ needs.validate.outputs.dist_tag }}"
-          --allow-version-as-latest
-
-      - name: Create public bootstrap release
-        if: needs.validate.outputs.bootstrap == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ needs.validate.outputs.tag }}
-          RELEASE_VERSION: ${{ needs.validate.outputs.version }}
-        run: |
-          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release edit "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --draft=false --prerelease --title "v$RELEASE_VERSION" --notes-file "$RUNNER_TEMP/release-notes.md"
-          else
-            gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --verify-tag --prerelease --title "v$RELEASE_VERSION" --notes-file "$RUNNER_TEMP/release-notes.md"
-          fi
-
-      - name: Create draft staged release
-        if: needs.validate.outputs.bootstrap != 'true'
+      - name: Create draft GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
           PRERELEASE: ${{ needs.validate.outputs.prerelease }}
@@ -256,10 +222,17 @@ jobs:
         run: node scripts/release-metadata.mjs "${{ inputs.release_tag }}"
 
       - name: Verify approved npm publication
-        run: >-
-          node scripts/verify-published-package.mjs
-          "${{ steps.metadata.outputs.version }}"
-          "${{ steps.metadata.outputs.dist_tag }}"
+        env:
+          DIST_TAG: ${{ steps.metadata.outputs.dist_tag }}
+          PRERELEASE: ${{ steps.metadata.outputs.prerelease }}
+          VERSION: ${{ steps.metadata.outputs.version }}
+        run: |
+          if [ "$PRERELEASE" = 'true' ]; then
+            node scripts/verify-published-package.mjs "$VERSION" "$DIST_TAG" --reject-version-as-latest
+          else
+            node scripts/verify-published-package.mjs "$VERSION" latest
+            node scripts/verify-published-package.mjs "$VERSION" next
+          fi
 
       - name: Publish draft GitHub Release
         env:

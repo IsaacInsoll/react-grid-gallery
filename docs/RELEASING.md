@@ -1,10 +1,9 @@
 # Release Process
 
-> **Pre-release status:** [`1.0.0-rc.0`](https://www.npmjs.com/package/@picr/react-grid-gallery/v/1.0.0-rc.0)
-> was published with provenance on 2026-08-05. The one-use GitHub bootstrap
-> secret and corresponding npm token have been removed. The stage-only trusted
-> publisher is configured; its OIDC binding will be verified by staging the
-> stable release. Progress is tracked in `MODERNIZATION_PLAN.md`.
+> [`1.0.0-rc.0`](https://www.npmjs.com/package/@picr/react-grid-gallery/v/1.0.0-rc.0)
+> established the package on npm with provenance on 2026-08-05. Its one-use
+> bootstrap credential was removed, and the permanent workflow is stage-only.
+> Progress toward the stable release is tracked in `MODERNIZATION_PLAN.md`.
 
 `@picr/react-grid-gallery` is published only by the maintainer through GitHub
 Actions. Do not run `npm publish` from a development machine or add a long-lived
@@ -24,13 +23,13 @@ another release.
   The tag-triggered workflow repeats its release gates before npm receives an
   artifact.
 - Local release checks run while `package.json` still contains the current
-  version (`0.0.0-development` before the first release). The tag workflow is
-  therefore the authoritative validation of the final versioned tarball.
+  version. The tag workflow is therefore the authoritative validation of the
+  final versioned tarball.
 - The release workflow must use the repository's verified Corepack bootstrap
   and integrity-pinned npm version.
-- Trusted publishing must use OIDC without `NODE_AUTH_TOKEN`. Bootstrap or
-  emergency token publishing must set `NODE_AUTH_TOKEN` explicitly only on the
-  publish step; `actions/setup-node` v7 no longer supplies a dummy value.
+- Trusted publishing must use OIDC without `NODE_AUTH_TOKEN`. An explicitly
+  approved emergency token path must set `NODE_AUTH_TOKEN` only on its publish
+  step; `actions/setup-node` v7 no longer supplies a dummy value.
 - Workflow actions must use full commit SHAs and least-privilege permissions.
 - Only the publishing job may receive `id-token: write`; release operations may
   receive `contents: write` only when required.
@@ -42,7 +41,8 @@ another release.
 - `CHANGELOG.md` and GitHub release notes must be human-curated and preserve
   contributor attribution.
 - Stable and prerelease publishes must use explicit `latest` and `next`
-  distribution tags respectively.
+  distribution tags respectively. Keep `next` present: it points to the newest
+  prerelease while one is ahead of stable, otherwise it follows `latest`.
 
 ## First Publish
 
@@ -82,13 +82,13 @@ short-lived OIDC credentials rather than traditional automation tokens.
 
 The bootstrap token was read only by the `1.0.0-rc.0` publish step. Both the
 GitHub environment secret and the corresponding granular npm token have been
-removed.
+removed, and the one-off token branch has been removed from the permanent
+workflow.
 
 ## Creating A Release
 
-The unpublished development version is `0.0.0-development`. It exists only so
-the first release candidate can advance cleanly to `1.0.0-rc.0`; never publish
-the development placeholder.
+Never release the historical `0.0.0-development` placeholder. Release from the
+current version on synchronized `main`.
 
 Update local `main`, then manually add one non-empty `## v<version>` or
 `## v<version> / YYYY-MM-DD` section to `CHANGELOG.md`. That file must be the
@@ -128,11 +128,32 @@ synchronized `main`. Pushing the release tag starts the publishing workflow.
 GitHub OIDC stages the exact checked package at npm and creates a draft GitHub
 Release. Review the staged package on npm, approve it with 2FA, then run the
 `Release` workflow manually with the existing `v<version>` tag. The finalization
-job verifies the version and explicit `next` or `latest` tag on npm before making
-the draft GitHub Release public. npm approval is the single human publication
-gate; the manual workflow run only synchronizes the public announcement.
+job verifies the version and expected npm distribution tags before making the
+draft GitHub Release public. npm approval is the single human publication gate;
+the manual workflow run only synchronizes the public announcement.
+
+Prereleases move `next` and leave `latest` on the newest stable release. After
+approving a stable version, move `next` to that same version before finalizing:
+
+```sh
+npm dist-tag add @picr/react-grid-gallery@1.0.0 next
+```
+
+Substitute the stable version being released. This keeps `next` available at all
+times: it identifies the newest release candidate when one is ahead of stable,
+and otherwise matches `latest`. Stable finalization verifies both tags;
+prerelease finalization verifies `next` and rejects a prerelease that has moved
+`latest`.
 
 ## Emergency Recovery
+
+If OIDC staging fails after a release tag has been pushed, first correct the npm
+trusted-publisher or GitHub environment configuration and rerun the failed job
+against the existing tag. Do not delete and recreate the tag by default. If the
+failure is embedded in workflow code at that tag, stop and assess whether npm
+has made any version public, then land a focused fix and record the chosen
+recovery. Re-tag an unpublished version only as a last-resort documented
+decision.
 
 Restore the trusted-publishing path before releasing whenever practical. If an
 urgent security release cannot wait for that repair:

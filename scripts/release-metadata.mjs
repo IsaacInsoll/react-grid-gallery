@@ -33,7 +33,6 @@ export const getReleaseMetadata = (manifest, tag) => {
   const prerelease = version.includes('-');
 
   return {
-    bootstrap: version === '1.0.0-rc.0',
     distTag: prerelease ? 'next' : 'latest',
     prerelease,
     tag,
@@ -85,7 +84,6 @@ if (isMain) {
     appendFileSync(
       output,
       [
-        `bootstrap=${metadata.bootstrap}`,
         `dist_tag=${metadata.distTag}`,
         `prerelease=${metadata.prerelease}`,
         `tag=${metadata.tag}`,

@@ -3,11 +3,10 @@ import { getReleaseMetadata } from '../../scripts/release-metadata.mjs';
 import { assertPublishedPackage } from '../../scripts/verify-published-package.mjs';
 
 describe('release workflow metadata', () => {
-  it('marks the first release candidate as the token bootstrap', () => {
+  it('uses next for a prerelease', () => {
     expect(
       getReleaseMetadata({ version: '1.0.0-rc.0' }, 'v1.0.0-rc.0'),
     ).toEqual({
-      bootstrap: true,
       distTag: 'next',
       prerelease: true,
       tag: 'v1.0.0-rc.0',
@@ -17,7 +16,6 @@ describe('release workflow metadata', () => {
 
   it('uses latest for a stable release', () => {
     expect(getReleaseMetadata({ version: '1.0.0' }, 'v1.0.0')).toMatchObject({
-      bootstrap: false,
       distTag: 'latest',
       prerelease: false,
     });
@@ -85,25 +83,26 @@ describe('published package verification', () => {
         },
         {
           distTag: 'next',
+          rejectVersionAsLatest: true,
           version: '1.0.0-rc.0',
         },
       );
     }).toThrow('unexpectedly points latest to prerelease');
   });
 
-  it('accepts the recorded first-registration latest exception', () => {
-    expect(() => {
-      assertPublishedPackage(
-        {
-          ...packument,
-          'dist-tags': { latest: '1.0.0-rc.0', next: '1.0.0-rc.0' },
-        },
-        {
-          allowVersionAsLatest: true,
-          distTag: 'next',
-          version: '1.0.0-rc.0',
-        },
-      );
-    }).not.toThrow();
+  it('accepts a stable version on both latest and next', () => {
+    const stablePackument = {
+      'dist-tags': { latest: '1.0.0', next: '1.0.0' },
+      versions: { '1.0.0': {} },
+    };
+
+    for (const distTag of ['latest', 'next']) {
+      expect(() => {
+        assertPublishedPackage(stablePackument, {
+          distTag,
+          version: '1.0.0',
+        });
+      }).not.toThrow();
+    }
   });
 });
