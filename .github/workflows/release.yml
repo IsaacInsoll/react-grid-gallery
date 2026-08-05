@@ -193,7 +193,7 @@ jobs:
           node scripts/verify-published-package.mjs
           "${{ needs.validate.outputs.version }}"
           "${{ needs.validate.outputs.dist_tag }}"
-          --require-no-latest
+          --allow-version-as-latest
 
       - name: Create public bootstrap release
         if: needs.validate.outputs.bootstrap == 'true'

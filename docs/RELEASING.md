@@ -1,10 +1,10 @@
 # Release Process
 
-> **Pre-release status:** `release-it` and `.github/workflows/release.yml` are
-> configured, and the `npm-publish` environment accepts only `v*` tags without a
-> redundant reviewer gate. The bootstrap token and npm trusted publisher still
-> require setup. Do not create a release tag until the applicable credential is
-> ready. Progress is tracked in `MODERNIZATION_PLAN.md`.
+> **Pre-release status:** [`1.0.0-rc.0`](https://www.npmjs.com/package/@picr/react-grid-gallery/v/1.0.0-rc.0)
+> was published with provenance on 2026-08-05. The one-use GitHub bootstrap
+> secret and corresponding npm token have been removed. The stage-only trusted
+> publisher is configured; its OIDC binding will be verified by staging the
+> stable release. Progress is tracked in `MODERNIZATION_PLAN.md`.
 
 `@picr/react-grid-gallery` is published only by the maintainer through GitHub
 Actions. Do not run `npm publish` from a development machine or add a long-lived
@@ -46,20 +46,27 @@ another release.
 
 ## First Publish
 
-The package must exist on npm before trusted publishing can be configured. The
-`1.0.0-rc.0` bootstrap therefore uses a temporary granular token from the
-GitHub Actions workflow, publishes with provenance and the `next` tag, verifies
-that npm has not created `latest`, then revokes the token immediately.
+The package had to exist on npm before trusted publishing could be configured.
+The `1.0.0-rc.0` bootstrap therefore used a temporary granular token from the
+GitHub Actions workflow and published with provenance and the explicit `next`
+tag.
+
+npm also assigned `latest` during this first package registration despite the
+explicit prerelease tag. The release workflow correctly stopped before the
+GitHub announcement because its stricter assertion expected `latest` to be
+absent. The maintainer accepted this one-time bootstrap state because the
+package had not been announced and stable `1.0.0` will explicitly replace
+`latest`; it is not the policy for later prereleases. The GitHub prerelease was
+then created manually from the same checked changelog notes.
 
 The `npm-publish` GitHub environment is restricted to tags matching `v*` and has
-no required reviewers. Add a short-expiry granular `NPM_BOOTSTRAP_TOKEN`
-environment secret with only the access needed to create the public package
-under `@picr`; because the first publish is non-interactive, this one token must
-be allowed to bypass publish 2FA. Do not create the RC tag until it is ready.
+no required reviewers. Its one-use `NPM_BOOTSTRAP_TOKEN` secret was removed
+after publication and must not be restored for normal releases.
 
-After bootstrap, configure stage-only npm trusted publishing for the permanent
-workflow and a release-tag-restricted `npm-publish` GitHub environment. Verify
-the prerelease's repository-linked provenance before staging `1.0.0`.
+Stage-only npm trusted publishing is configured for the permanent workflow and
+the release-tag-restricted `npm-publish` GitHub environment. The first OIDC
+stage will verify the binding before `1.0.0` is approved. The prerelease's
+repository-linked provenance has already been verified.
 
 Use these npm trusted-publisher values:
 
@@ -73,9 +80,9 @@ Once OIDC staging works, set package publishing access to require 2FA and
 disallow tokens. npm trusted publishing continues to work because it uses
 short-lived OIDC credentials rather than traditional automation tokens.
 
-The bootstrap token is read only by the `1.0.0-rc.0` publish step. Remove the
-`NPM_BOOTSTRAP_TOKEN` environment secret and revoke the npm token immediately
-after the workflow verifies `next` and confirms that `latest` is absent.
+The bootstrap token was read only by the `1.0.0-rc.0` publish step. Both the
+GitHub environment secret and the corresponding granular npm token have been
+removed.
 
 ## Creating A Release
 
