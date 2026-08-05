@@ -41,6 +41,11 @@ replacing the React 18 or TypeScript 5.5 minimum-version fixtures, and regenerat
 both lockfiles together. Keep root `@types/node` on the Node 22 support floor;
 routine updates within that major remain automated.
 
+Testing Library patch and minor updates remain automated. Coordinate its major
+updates across `@testing-library/react`, `@testing-library/dom`, and
+`@testing-library/jest-dom` so their React support and test behavior move
+together.
+
 Vite builds the maintained browser fixture that feeds zero-tolerance visual
 baselines, and Vitest may resolve its own Vite dependency. Review and update
 those packages together, then synchronize the packed consumer's Vite version so
