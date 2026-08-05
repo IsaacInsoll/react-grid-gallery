@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url';
 
 export const assertPublishedPackage = (
   packument,
-  { distTag, requireNoLatest = false, version },
+  { allowVersionAsLatest = false, distTag, version },
 ) => {
   if (!packument.versions?.[version]) {
     throw new Error(`npm does not expose version ${version}.`);
@@ -14,9 +14,13 @@ export const assertPublishedPackage = (
     throw new Error(`npm tag ${distTag} does not point to ${version}.`);
   }
 
-  if (requireNoLatest && packument['dist-tags']?.latest) {
+  if (
+    !allowVersionAsLatest &&
+    distTag !== 'latest' &&
+    packument['dist-tags']?.latest === version
+  ) {
     throw new Error(
-      `npm unexpectedly exposes latest as ${packument['dist-tags'].latest}.`,
+      `npm unexpectedly points latest to prerelease version ${version}.`,
     );
   }
 };
@@ -38,8 +42,8 @@ if (isMain) {
   const manifest = JSON.parse(readFileSync('package.json', 'utf8'));
   const registryUrl = `https://registry.npmjs.org/${encodeURIComponent(manifest.name)}`;
   const options = {
+    allowVersionAsLatest: flags.includes('--allow-version-as-latest'),
     distTag,
-    requireNoLatest: flags.includes('--require-no-latest'),
     version,
   };
   let lastError;

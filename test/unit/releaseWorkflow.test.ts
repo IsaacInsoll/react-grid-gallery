@@ -55,7 +55,6 @@ describe('published package verification', () => {
     expect(() => {
       assertPublishedPackage(packument, {
         distTag: 'next',
-        requireNoLatest: true,
         version: '1.0.0-rc.0',
       });
     }).not.toThrow();
@@ -77,7 +76,7 @@ describe('published package verification', () => {
     }).toThrow('latest does not point');
   });
 
-  it('rejects latest during the first prerelease bootstrap', () => {
+  it('rejects a prerelease that unexpectedly moves latest', () => {
     expect(() => {
       assertPublishedPackage(
         {
@@ -86,10 +85,25 @@ describe('published package verification', () => {
         },
         {
           distTag: 'next',
-          requireNoLatest: true,
           version: '1.0.0-rc.0',
         },
       );
-    }).toThrow('unexpectedly exposes latest');
+    }).toThrow('unexpectedly points latest to prerelease');
+  });
+
+  it('accepts the recorded first-registration latest exception', () => {
+    expect(() => {
+      assertPublishedPackage(
+        {
+          ...packument,
+          'dist-tags': { latest: '1.0.0-rc.0', next: '1.0.0-rc.0' },
+        },
+        {
+          allowVersionAsLatest: true,
+          distTag: 'next',
+          version: '1.0.0-rc.0',
+        },
+      );
+    }).not.toThrow();
   });
 });
