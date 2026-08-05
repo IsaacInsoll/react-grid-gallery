@@ -8,8 +8,8 @@ interface PackageRegistryDocument {
 }
 
 interface PublishedPackageExpectation {
-  allowVersionAsLatest?: boolean;
   distTag: string;
+  rejectVersionAsLatest?: boolean;
   version: string;
 }
 
