@@ -45,7 +45,7 @@ const getRow = <T extends Image = Image>(
       Math.floor(containerWidth - marginsWidth),
     );
     const naturalWidth = totalRowWidth - marginsWidth;
-    const scale = availableWidth / naturalWidth;
+    const scale = naturalWidth > 0 ? availableWidth / naturalWidth : 0;
     const scaledRowHeight = Math.floor(rowHeight * scale);
     let usedWidth = 0;
 

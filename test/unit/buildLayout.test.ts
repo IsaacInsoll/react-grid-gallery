@@ -178,6 +178,38 @@ describe('buildLayout', () => {
     ]);
   });
 
+  it('should keep dimensions finite when every natural width rounds to zero', () => {
+    const [row] = buildLayout(
+      [
+        { src: 'first', width: 1, height: 1000 },
+        { src: 'second', width: 1, height: 1000 },
+      ],
+      {
+        containerWidth: 3,
+        rowHeight: 100,
+        margin: 2,
+      },
+    );
+
+    expect(row).toHaveLength(1);
+    expect(row[0]).toEqual(
+      expect.objectContaining({
+        scaledWidth: 0,
+        scaledHeight: 0,
+        viewportWidth: 0,
+        marginLeft: 0,
+      }),
+    );
+    expect(
+      [
+        row[0]?.scaledWidth,
+        row[0]?.scaledHeight,
+        row[0]?.viewportWidth,
+        row[0]?.marginLeft,
+      ].every((value) => Number.isFinite(value) && value >= 0),
+    ).toBe(true);
+  });
+
   it("should build multiple rows when images don't fit into a single row", () => {
     const images = [image100x100, image100x100, image100x100];
     const options = { containerWidth: 200, rowHeight: 100, margin: 0 };
