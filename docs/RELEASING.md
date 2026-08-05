@@ -1,9 +1,10 @@
 # Release Process
 
 > **Pre-release status:** `release-it` and `.github/workflows/release.yml` are
-> configured, but the `npm-publish` environment, bootstrap token, and npm trusted
-> publisher still require setup. Do not create a release tag until those controls
-> are ready. Progress is tracked in `MODERNIZATION_PLAN.md`.
+> configured, and the `npm-publish` environment accepts only `v*` tags without a
+> redundant reviewer gate. The bootstrap token and npm trusted publisher still
+> require setup. Do not create a release tag until the applicable credential is
+> ready. Progress is tracked in `MODERNIZATION_PLAN.md`.
 
 `@picr/react-grid-gallery` is published only by the maintainer through GitHub
 Actions. Do not run `npm publish` from a development machine or add a long-lived
@@ -50,12 +51,11 @@ The package must exist on npm before trusted publishing can be configured. The
 GitHub Actions workflow, publishes with provenance and the `next` tag, verifies
 that npm has not created `latest`, then revokes the token immediately.
 
-After `release.yml` is merged, create the `npm-publish` GitHub environment with
-deployment restricted to tags matching `v*` and no required reviewers. Add a
-short-expiry granular `NPM_BOOTSTRAP_TOKEN` environment secret with only the
-access needed to create the public package under `@picr`; because the first
-publish is non-interactive, this one token must be allowed to bypass publish
-2FA. Do not create the RC tag until both are ready.
+The `npm-publish` GitHub environment is restricted to tags matching `v*` and has
+no required reviewers. Add a short-expiry granular `NPM_BOOTSTRAP_TOKEN`
+environment secret with only the access needed to create the public package
+under `@picr`; because the first publish is non-interactive, this one token must
+be allowed to bypass publish 2FA. Do not create the RC tag until it is ready.
 
 After bootstrap, configure stage-only npm trusted publishing for the permanent
 workflow and a release-tag-restricted `npm-publish` GitHub environment. Verify
