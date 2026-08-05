@@ -48,6 +48,11 @@ it remains representative of the supported toolchain. Playwright Test must
 match the digest-pinned container and its browser binaries. Update either set
 manually and review any affected browser snapshots.
 
+`release-it` is part of the publishing authority rather than an ordinary
+development dependency. Update it manually after the release-flow dry run and
+isolated synchronized-main release smoke test pass; routine Dependabot updates
+are disabled without suppressing security updates.
+
 GitHub's repository-level dependency security features are expected to cover
 the tracked packed-consumer lockfile. `npm run security:audit` also checks that
 independent lockfile explicitly; its routine updates remain part of the manual
