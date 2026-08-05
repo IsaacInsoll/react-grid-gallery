@@ -1,10 +1,23 @@
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readdirSync, rmSync } from 'node:fs';
+import {
+  constants,
+  copyFileSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  rmSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const packDirectory = mkdtempSync(path.join(tmpdir(), 'react-grid-gallery-'));
+const outputArgument = process.argv
+  .slice(2)
+  .find((argument) => argument.startsWith('--output='));
+const outputPath = outputArgument
+  ? path.resolve(outputArgument.slice('--output='.length))
+  : undefined;
 const expectedFiles = [
   'ACKNOWLEDGEMENTS.md',
   'CHANGELOG.md',
@@ -60,6 +73,12 @@ try {
 
   runNpm(['exec', '--offline', '--', 'publint', tarball, '--strict']);
   runNpm(['exec', '--offline', '--', 'attw', tarball, '--profile', 'esm-only']);
+
+  if (outputPath) {
+    mkdirSync(path.dirname(outputPath), { recursive: true });
+    copyFileSync(tarball, outputPath, constants.COPYFILE_EXCL);
+    console.log(`Preserved checked tarball at ${outputPath}.`);
+  }
 } finally {
   rmSync(packDirectory, { recursive: true, force: true });
 }
