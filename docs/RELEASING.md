@@ -1,9 +1,9 @@
 # Release Process
 
-> **Pre-release status:** `release-it` is configured, but
-> `.github/workflows/release.yml`, the `npm-publish` environment, and npm trusted
-> publishing are not configured yet. Do not create a release tag until that
-> workflow exists. Progress is tracked in `MODERNIZATION_PLAN.md`.
+> **Pre-release status:** `release-it` and `.github/workflows/release.yml` are
+> configured, but the `npm-publish` environment, bootstrap token, and npm trusted
+> publisher still require setup. Do not create a release tag until those controls
+> are ready. Progress is tracked in `MODERNIZATION_PLAN.md`.
 
 `@picr/react-grid-gallery` is published only by the maintainer through GitHub
 Actions. Do not run `npm publish` from a development machine or add a long-lived
@@ -35,6 +35,9 @@ another release.
   receive `contents: write` only when required.
 - The packed artifact must pass the complete release gates and be reviewed
   before publishing.
+- Validation preserves one checked tarball as a short-lived workflow artifact.
+  The publishing job verifies its SHA-512 after transfer and gives those exact
+  bytes to npm; it does not rebuild or repack with publishing credentials.
 - `CHANGELOG.md` and GitHub release notes must be human-curated and preserve
   contributor attribution.
 - Stable and prerelease publishes must use explicit `latest` and `next`
@@ -47,9 +50,32 @@ The package must exist on npm before trusted publishing can be configured. The
 GitHub Actions workflow, publishes with provenance and the `next` tag, verifies
 that npm has not created `latest`, then revokes the token immediately.
 
+After `release.yml` is merged, create the `npm-publish` GitHub environment with
+deployment restricted to tags matching `v*` and no required reviewers. Add a
+short-expiry granular `NPM_BOOTSTRAP_TOKEN` environment secret with only the
+access needed to create the public package under `@picr`; because the first
+publish is non-interactive, this one token must be allowed to bypass publish
+2FA. Do not create the RC tag until both are ready.
+
 After bootstrap, configure stage-only npm trusted publishing for the permanent
 workflow and a release-tag-restricted `npm-publish` GitHub environment. Verify
 the prerelease's repository-linked provenance before staging `1.0.0`.
+
+Use these npm trusted-publisher values:
+
+- GitHub organization or user: `IsaacInsoll`
+- Repository: `react-grid-gallery`
+- Workflow filename: `release.yml`
+- Environment: `npm-publish`
+- Allowed action: `npm stage publish` only
+
+Once OIDC staging works, set package publishing access to require 2FA and
+disallow tokens. npm trusted publishing continues to work because it uses
+short-lived OIDC credentials rather than traditional automation tokens.
+
+The bootstrap token is read only by the `1.0.0-rc.0` publish step. Remove the
+`NPM_BOOTSTRAP_TOKEN` environment secret and revoke the npm token immediately
+after the workflow verifies `next` and confirms that `latest` is absent.
 
 ## Creating A Release
 
@@ -92,9 +118,12 @@ pending. Do not use administrator bypass for ordinary development work.
 
 `release-it` creates the version commit and annotated tag directly from
 synchronized `main`. Pushing the release tag starts the publishing workflow.
-GitHub OIDC stages the package at npm, npm 2FA approval is the single human gate
-before it becomes public, and the workflow publishes the curated GitHub Release
-only after the package is available.
+GitHub OIDC stages the exact checked package at npm and creates a draft GitHub
+Release. Review the staged package on npm, approve it with 2FA, then run the
+`Release` workflow manually with the existing `v<version>` tag. The finalization
+job verifies the version and explicit `next` or `latest` tag on npm before making
+the draft GitHub Release public. npm approval is the single human publication
+gate; the manual workflow run only synchronizes the public announcement.
 
 ## Emergency Recovery
 
@@ -103,12 +132,15 @@ urgent security release cannot wait for that repair:
 
 1. Create a granular npm token limited to this package, publishing, and the
    shortest practical expiry.
-2. Store it only in the protected `npm-publish` GitHub environment and run the
-   same SHA-pinned workflow, release gates, provenance generation, and npm 2FA
-   approval used by a normal release.
-3. Revoke the token and remove the environment secret immediately after
-   verifying the published package.
-4. Record why trusted publishing was unavailable and the recovery work needed.
+2. Land a focused, reviewed change to `release.yml` that enables token
+   authentication only for the exact emergency tag. Keep the normal release
+   gates, exact-artifact transfer, provenance generation, and GitHub Release
+   ordering unchanged.
+3. Store the token only in the protected `npm-publish` GitHub environment and
+   set `NODE_AUTH_TOKEN` only on that emergency publish step.
+4. Revoke the token, remove the environment secret, and restore the stage-only
+   workflow immediately after verifying the published package.
+5. Record why trusted publishing was unavailable and the recovery work needed.
 
 Never bypass the workflow with a local publish or retain the recovery token for
 the next release.
