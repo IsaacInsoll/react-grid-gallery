@@ -5,6 +5,51 @@ fork's [GitHub Releases](https://github.com/IsaacInsoll/react-grid-gallery/relea
 page. The entries below preserve the original project's release history and
 links.
 
+## v1.0.0 / 2026-08-05
+
+This is the first stable release of `@picr/react-grid-gallery`, a maintained
+fork of `react-grid-gallery`. Version `1.0.0` starts a new scoped-package release
+line and is not a downgrade from the original package's `1.0.1` release.
+
+### Modern Package
+
+- Publish an ESM-only ES2020 package with a modern package-root export map.
+- Ship generated TypeScript declarations through the package root and validate
+  them with TypeScript 5.5, 6, and 7 against React 18 and 19 types.
+- Support React 18 and 19 with Node.js 22 or newer as the package baseline.
+- Publish only the checked `dist` entrypoints and required documentation;
+  CommonJS, UMD, browser-script, and deep `src` imports are not supported.
+
+### Fixes And Features
+
+- Correct justified-row fitting so overflowing rows rescale complete images
+  instead of horizontally cropping them. Thanks to
+  [Olli-Pekka Niskanen](https://github.com/opniskanen) for the fix contributed
+  through [PICR PR #73](https://github.com/IsaacInsoll/PICR/pull/73) and
+  explicitly relicensed for this MIT package.
+- Add optional `Image.href` support for native linked gallery tiles, preserving
+  behavior developed and validated in
+  [PICR](https://github.com/IsaacInsoll/PICR/commit/9646fb329e18f5ffad72de1630bc3d48f4f46aa7).
+- Correct generic style-function types so custom image fields remain available
+  to callbacks, and align exported optional and required props with runtime
+  behavior.
+- Remove the spreadable custom-thumbnail `imageProps.key` contract and global
+  `JSX.Element` references for React 19 compatibility.
+- Keep initial rendering available without `ResizeObserver`; responsive updates
+  use the native API or an application-provided polyfill.
+
+### Maintenance And Migration
+
+- Replace the abandoned build and test stack with strict TypeScript, tsdown,
+  Vitest, Playwright, packed-consumer checks, publint, and ATTW.
+- Publish from GitHub Actions with an exact checked tarball, stage-only OIDC,
+  npm 2FA approval, and npm provenance.
+- Preserve the MIT license, Ben Howell's original authorship, the complete
+  inherited Git history, and individual contributor credit. See
+  [ACKNOWLEDGEMENTS.md](./ACKNOWLEDGEMENTS.md) for details.
+- See [docs/MIGRATION.md](./docs/MIGRATION.md) for package-name, ESM, runtime,
+  type, linked-tile, and justified-row migration details.
+
 ## v1.0.0-rc.0 / 2026-08-05
 
 This is the first release candidate for `@picr/react-grid-gallery`, a maintained
