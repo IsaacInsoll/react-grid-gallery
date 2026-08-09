@@ -2,24 +2,41 @@ import type { MouseEvent, ReactElement } from 'react';
 import { Image } from './Image';
 import { useContainerWidth } from './useContainerWidth';
 import { buildLayoutFlat } from './buildLayout';
-import type { GalleryProps, Image as ImageInterface } from './types';
+import type {
+  GalleryLayout,
+  GalleryProps,
+  Image as ImageInterface,
+} from './types';
 import * as styles from './styles';
 
-export const Gallery = <T extends ImageInterface>({
-  images,
-  id = 'ReactGridGallery',
-  enableImageSelection = true,
-  onSelect = () => {},
-  rowHeight = 180,
-  maxRows,
-  margin = 2,
-  defaultContainerWidth = 0,
-  onClick = () => {},
-  tileViewportStyle,
-  thumbnailStyle,
-  tagStyle,
-  thumbnailImageComponent,
-}: GalleryProps<T>): ReactElement => {
+type ResolvedGalleryProps<T extends ImageInterface = ImageInterface> =
+  GalleryProps<T> & {
+    layout?: GalleryLayout;
+    rowHeight?: number;
+    maxRows?: number;
+    columnWidth?: number;
+  };
+
+export const Gallery = <T extends ImageInterface>(
+  props: GalleryProps<T>,
+): ReactElement => {
+  const resolvedProps: ResolvedGalleryProps<T> = props;
+  const {
+    images,
+    id = 'ReactGridGallery',
+    enableImageSelection = true,
+    onSelect = () => {},
+    rowHeight = 180,
+    maxRows,
+    margin = 2,
+    defaultContainerWidth = 0,
+    onClick = () => {},
+    tileViewportStyle,
+    thumbnailStyle,
+    tagStyle,
+    thumbnailImageComponent,
+  } = resolvedProps;
+
   const { containerRef, containerWidth } = useContainerWidth(
     defaultContainerWidth,
   );
@@ -56,7 +73,6 @@ export const Gallery = <T extends ImageInterface>({
             item={item}
             index={index}
             margin={margin}
-            height={rowHeight}
             isSelectable={enableImageSelection}
             onClick={handleClick}
             onSelect={handleSelect}

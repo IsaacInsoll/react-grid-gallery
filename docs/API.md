@@ -254,12 +254,15 @@ negative horizontal cropping offset.
 
 ## Exported Types
 
-The package exports `BuildLayoutOptions`, `CheckButtonProps`, `EventHandler`,
-`GalleryProps`, `Image`, `ImageExtended`, `ImageExtendedRow`, `ImageProps`,
-`ImageTag`, `StyleFunction`, `StyleFunctionContext`, `StyleProp`,
-`ThumbnailImageComponentImageProps`, and `ThumbnailImageProps`.
+The package exports `BuildLayoutOptions`, `BuildMasonryLayoutOptions`,
+`CheckButtonProps`, `EventHandler`, `GalleryLayout`, `GalleryProps`, `Image`,
+`ImageExtended`, `ImageExtendedRow`, `ImageExtendedWithIndex`, `ImageProps`,
+`ImageTag`, `MasonryColumn`, `MasonryLayout`, `StyleFunction`,
+`StyleFunctionContext`, `StyleProp`, `ThumbnailImageComponentImageProps`, and
+`ThumbnailImageProps`.
 
 `ImageProps` is primarily the shared contract used by custom thumbnail props.
 Its `isSelectable` value is always a required boolean when supplied by
 `Gallery`; its style properties are optional because the internal defaults are
-valid when callers omit them.
+valid when callers omit them. `ImageProps.height` is deprecated, unused by the
+built-in image component, and will be removed in v2.

@@ -6,14 +6,19 @@ import {
 } from '@picr/react-grid-gallery';
 import type {
   BuildLayoutOptions,
+  BuildMasonryLayoutOptions,
   CheckButtonProps,
   EventHandler,
+  GalleryLayout,
   GalleryProps,
   Image,
   ImageExtended,
   ImageExtendedRow,
+  ImageExtendedWithIndex,
   ImageProps,
   ImageTag,
+  MasonryColumn,
+  MasonryLayout,
   StyleFunction,
   StyleFunctionContext,
   StyleProp,
@@ -104,6 +109,48 @@ const galleryProps: GalleryProps<CustomImage> = {
 
 const galleryElement: ReactElement = <Gallery<CustomImage> {...galleryProps} />;
 
+const layoutName: GalleryLayout = 'masonry';
+
+const justifiedGalleryProps: GalleryProps<CustomImage> = {
+  images,
+  layout: 'justified',
+  rowHeight: 180,
+  maxRows: 2,
+};
+
+const masonryGalleryProps: GalleryProps<CustomImage> = {
+  images,
+  layout: 'masonry',
+  columnWidth: 220,
+};
+
+const invalidMasonryGalleryProps: GalleryProps<CustomImage> = {
+  images,
+  layout: 'masonry',
+  // @ts-expect-error rowHeight is only valid for justified layout.
+  rowHeight: 180,
+};
+
+const invalidMasonryRowsProps: GalleryProps<CustomImage> = {
+  images,
+  layout: 'masonry',
+  // @ts-expect-error maxRows is only valid for justified layout.
+  maxRows: 2,
+};
+
+const invalidJustifiedGalleryProps: GalleryProps<CustomImage> = {
+  images,
+  layout: 'justified',
+  // @ts-expect-error columnWidth is only valid for masonry layout.
+  columnWidth: 180,
+};
+
+const invalidLayoutGalleryProps: GalleryProps<CustomImage> = {
+  images,
+  // @ts-expect-error layout must be one of the public layout values.
+  layout: 'mansory',
+};
+
 const checkButtonProps: CheckButtonProps = {
   onClick: () => {},
 };
@@ -122,6 +169,20 @@ const flat: ImageExtendedRow<CustomImage> = buildLayoutFlat(
   images,
   layoutOptions,
 );
+
+const masonryOptions: BuildMasonryLayoutOptions = {
+  containerWidth: 800,
+  columnWidth: 220,
+  margin: 2,
+};
+
+const indexedImage: ImageExtendedWithIndex<CustomImage> = {
+  ...extendedImage,
+  originalIndex: 0,
+};
+const masonryColumn: MasonryColumn<CustomImage> = [indexedImage];
+const masonryLayout: MasonryLayout<CustomImage> = [masonryColumn];
+
 const [firstLayoutImage] = flat;
 if (!firstLayoutImage) {
   throw new Error('Expected the layout fixture to contain an image.');
@@ -134,6 +195,15 @@ export {
   galleryElement,
   imageHref,
   imagePropsWithoutStyles,
+  invalidJustifiedGalleryProps,
+  invalidLayoutGalleryProps,
+  invalidMasonryGalleryProps,
+  invalidMasonryRowsProps,
+  justifiedGalleryProps,
+  layoutName,
+  masonryGalleryProps,
+  masonryLayout,
+  masonryOptions,
   rows,
   styleContext,
 };

@@ -36,6 +36,11 @@ export type ImageExtended<T extends Image = Image> = T & {
   marginLeft: number;
 };
 
+export type ImageExtendedWithIndex<T extends Image = Image> =
+  ImageExtended<T> & {
+    originalIndex: number;
+  };
+
 export interface BuildLayoutOptions {
   containerWidth: number;
   maxRows?: number;
@@ -43,7 +48,18 @@ export interface BuildLayoutOptions {
   margin?: number;
 }
 
+export interface BuildMasonryLayoutOptions {
+  containerWidth: number;
+  columnWidth?: number;
+  margin?: number;
+}
+
 export type ImageExtendedRow<T extends Image = Image> = ImageExtended<T>[];
+
+export type MasonryColumn<T extends Image = Image> =
+  ImageExtendedWithIndex<T>[];
+
+export type MasonryLayout<T extends Image = Image> = MasonryColumn<T>[];
 
 export type EventHandler<T extends Image = Image> = (
   index: number,
@@ -72,6 +88,9 @@ export interface ImageProps<T extends ImageExtended = ImageExtended> {
   tileViewportStyle?: StyleProp<T>;
   thumbnailStyle?: StyleProp<T>;
   tagStyle?: StyleProp<T>;
+  /**
+   * @deprecated Unused by the built-in Image component. This will be removed in v2.
+   */
   height?: number;
   thumbnailImageComponent?: ComponentType<ThumbnailImageProps<T>>;
 }
@@ -88,13 +107,13 @@ export type ThumbnailImageProps<T extends ImageExtended = ImageExtended> =
     imageProps: ThumbnailImageComponentImageProps;
   };
 
-export interface GalleryProps<T extends Image = Image> {
+export type GalleryLayout = 'justified' | 'masonry';
+
+type BaseGalleryProps<T extends Image = Image> = {
   images: T[];
   id?: string;
   enableImageSelection?: boolean;
   onSelect?: EventHandler<T>;
-  rowHeight?: number;
-  maxRows?: number;
   margin?: number;
   defaultContainerWidth?: number;
   onClick?: EventHandler<T>;
@@ -104,7 +123,20 @@ export interface GalleryProps<T extends Image = Image> {
   thumbnailImageComponent?: ComponentType<
     ThumbnailImageProps<ImageExtended<T>>
   >;
-}
+};
+
+export type GalleryProps<T extends Image = Image> = BaseGalleryProps<T> &
+  (
+    | {
+        layout?: 'justified';
+        rowHeight?: number;
+        maxRows?: number;
+      }
+    | {
+        layout: 'masonry';
+        columnWidth?: number;
+      }
+  );
 
 export interface CheckButtonProps {
   isSelected?: boolean;
