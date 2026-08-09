@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { buildLayout } from '../../src';
-import { thumbnail, tileViewport, getStyle } from '../../src/styles';
+import {
+  checkButton,
+  thumbnail,
+  tileViewport,
+  getStyle,
+} from '../../src/styles';
 import { getFirstRow, getItemAt } from './layoutTestHelpers';
 import type { ImageExtended } from '../../src';
 
@@ -205,6 +210,59 @@ describe('styles', () => {
       const style = getStyle(undefined, fallback, { item: baseItem });
 
       expect(style).toEqual({ display: 'none' });
+    });
+  });
+
+  describe('checkButton', () => {
+    it('should visually hide the control without using visibility hidden', () => {
+      const result = checkButton({ isVisible: false });
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          opacity: 0,
+          pointerEvents: 'none',
+        }),
+      );
+      expect(result).not.toHaveProperty('visibility');
+    });
+
+    it('should preserve the inherited selection-control box model', () => {
+      const result = checkButton({ isVisible: true });
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          boxSizing: 'content-box',
+          display: 'block',
+          height: 36,
+          padding: '2px 6px 10px',
+          textAlign: 'left',
+          width: 36,
+        }),
+      );
+    });
+
+    it('should expose pointer interaction when visible and enabled', () => {
+      const result = checkButton({ isVisible: true, disabled: false });
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          cursor: 'pointer',
+          opacity: 1,
+          pointerEvents: 'auto',
+        }),
+      );
+    });
+
+    it('should suppress pointer interaction when disabled', () => {
+      const result = checkButton({ isVisible: true, disabled: true });
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          cursor: 'default',
+          opacity: 1,
+          pointerEvents: 'none',
+        }),
+      );
     });
   });
 });

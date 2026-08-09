@@ -46,6 +46,10 @@ const handleLinkedClick: NonNullable<GalleryProps['onClick']> = (
   }
 };
 
+const handleSelect: NonNullable<GalleryProps['onSelect']> = (index) => {
+  document.body.dataset.gallerySelect = String(index);
+};
+
 const scenario =
   new URLSearchParams(window.location.search).get('scenario') ?? 'default';
 const rootElement = document.getElementById('root');
@@ -78,6 +82,8 @@ const getGalleryProps = (): GalleryProps => {
       return {
         images: images.map((image) => ({ ...image, isSelected: true })),
       };
+    case 'selection':
+      return { images, onSelect: handleSelect };
     case 'transparent':
       return {
         images: images.map((image) => ({

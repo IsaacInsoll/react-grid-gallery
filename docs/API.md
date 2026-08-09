@@ -156,8 +156,13 @@ that counts tile activations for analytics will not observe them.
 
 A linked viewport is a real anchor, so it joins the tab order and can be
 activated with Enter. Unlinked viewports remain non-focusable `div` elements,
-preserving the inherited behavior exactly. Adding `href` to an existing gallery
-therefore adds its tiles to the tab order.
+so adding `href` to an existing gallery adds its viewports to the tab order.
+
+When image selection is enabled, each tile also has a selection button before
+the viewport in the tab order. The button is visually revealed on hover or
+focus, exposes its selected state with `aria-pressed`, and can be activated with
+Enter or Space. Disabling image selection disables these buttons and removes
+them from the tab order.
 
 #### Containment
 
@@ -236,14 +241,16 @@ negative horizontal cropping offset.
 
 `CheckButton` is the gallery's exported selection control.
 
-| Prop            | Type                                       | Default     |
-| --------------- | ------------------------------------------ | ----------- |
-| `onClick`       | `(event: MouseEvent<HTMLElement>) => void` | Required    |
-| `isSelected`    | `boolean`                                  | `false`     |
-| `isVisible`     | `boolean`                                  | `true`      |
-| `color`         | `string`                                   | `#FFFFFFB2` |
-| `selectedColor` | `string`                                   | `#4285F4FF` |
-| `hoverColor`    | `string`                                   | `#FFFFFFFF` |
+| Prop            | Type                                       | Default        |
+| --------------- | ------------------------------------------ | -------------- |
+| `onClick`       | `(event: MouseEvent<HTMLElement>) => void` | Required       |
+| `isSelected`    | `boolean`                                  | `false`        |
+| `isVisible`     | `boolean`                                  | `true`         |
+| `label`         | `string`                                   | `Select image` |
+| `color`         | `string`                                   | `#FFFFFFB2`    |
+| `selectedColor` | `string`                                   | `#4285F4FF`    |
+| `hoverColor`    | `string`                                   | `#FFFFFFFF`    |
+| `disabled`      | `boolean`                                  | `false`        |
 
 ## Exported Types
 

@@ -27,7 +27,7 @@ export default defineConfig({
   projects: [
     {
       name: 'react-18-browser',
-      testMatch: /gallery\.(links|visual)\.spec\.ts/,
+      testMatch: /gallery\.(links|selection|visual)\.spec\.ts/,
       use: { baseURL: 'http://127.0.0.1:4173' },
     },
     {

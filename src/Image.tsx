@@ -85,6 +85,7 @@ export const Image = <T extends ImageExtended>({
         <CheckButton
           isSelected={!!item.isSelected}
           isVisible={item.isSelected || (isSelectable && hover)}
+          disabled={!isSelectable}
           onClick={handleCheckButtonClick}
         />
       </div>

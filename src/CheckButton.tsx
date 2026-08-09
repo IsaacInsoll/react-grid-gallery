@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import type { ReactElement } from 'react';
 import * as styles from './styles';
 import type { CheckButtonProps } from './types';
@@ -7,11 +7,15 @@ export const CheckButton = ({
   isSelected = false,
   isVisible = true,
   onClick,
+  disabled = false,
+  label = 'Select image',
   color = '#FFFFFFB2',
   selectedColor = '#4285F4FF',
   hoverColor = '#FFFFFFFF',
 }: CheckButtonProps): ReactElement => {
   const [hover, setHover] = useState(false);
+  const [focus, setFocus] = useState(false);
+  const shadowId = `${useId().replace(/:/g, '')}-shadow`;
 
   const circleStyle = { display: isSelected ? 'block' : 'none' };
   const fillColor = isSelected ? selectedColor : hover ? hoverColor : color;
@@ -24,11 +28,21 @@ export const CheckButton = ({
   };
 
   return (
-    <div
+    <button
+      type="button"
+      aria-label={label}
+      aria-pressed={isSelected}
       data-testid="grid-gallery-item_check-button"
-      title="Select"
-      style={styles.checkButton({ isVisible })}
+      disabled={disabled}
+      title={label}
+      style={styles.checkButton({ isVisible: isVisible || focus, disabled })}
       onClick={onClick}
+      onFocus={() => {
+        setFocus(true);
+      }}
+      onBlur={() => {
+        setFocus(false);
+      }}
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}
     >
@@ -40,7 +54,7 @@ export const CheckButton = ({
         xmlns="http://www.w3.org/2000/svg"
       >
         <radialGradient
-          id="shadow"
+          id={shadowId}
           cx="38"
           cy="95.488"
           r="10.488"
@@ -54,7 +68,7 @@ export const CheckButton = ({
         <circle
           style={circleStyle}
           opacity=".26"
-          fill="url(#shadow)"
+          fill={`url(#${shadowId})`}
           cx="12"
           cy="13.512"
           r="10.488"
@@ -63,6 +77,6 @@ export const CheckButton = ({
         <path d="M0 0h24v24H0z" fill="none" />
         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
       </svg>
-    </div>
+    </button>
   );
 };

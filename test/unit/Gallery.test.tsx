@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { renderToString } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { CheckButton } from '../../src/CheckButton';
 import { Gallery } from '../../src/Gallery';
 import type {
   EventHandler,
@@ -33,6 +34,8 @@ const getItemThumbnail = () =>
 const getItemViewport = () => screen.getByTestId('grid-gallery-item_viewport');
 const getItemCheckButton = () =>
   screen.getByTestId('grid-gallery-item_check-button');
+const getItemCheckButtons = () =>
+  screen.getAllByTestId('grid-gallery-item_check-button');
 
 // emulating server-side rendering
 // https://github.com/testing-library/react-testing-library/issues/561#issuecomment-1189796200
@@ -355,6 +358,27 @@ describe('Gallery Component', () => {
   });
 
   describe('Selection', () => {
+    it('should render check-button as a pressed button when item is selected', () => {
+      const image = { ...image1, isSelected: true };
+
+      render(<Gallery images={[image]} />);
+
+      const checkButton = getItemCheckButton();
+      expect(checkButton.tagName).toBe('BUTTON');
+      expect(checkButton).toHaveAttribute('type', 'button');
+      expect(checkButton).toHaveAccessibleName('Select image');
+      expect(checkButton).toHaveAttribute('title', 'Select image');
+      expect(checkButton).toHaveAttribute('aria-pressed', 'true');
+    });
+
+    it('should render check-button with custom label text', () => {
+      render(<CheckButton label="Choose photo" onClick={vi.fn()} />);
+
+      const checkButton = getItemCheckButton();
+      expect(checkButton).toHaveAccessibleName('Choose photo');
+      expect(checkButton).toHaveAttribute('title', 'Choose photo');
+    });
+
     it('should show check-button when item is selected', () => {
       const image = { ...image1, isSelected: true };
 
@@ -367,6 +391,20 @@ describe('Gallery Component', () => {
       render(<Gallery images={[image1]} />);
 
       expect(getItemCheckButton()).not.toBeVisible();
+      expect(getItemCheckButton()).not.toBeDisabled();
+    });
+
+    it('should show check-button when focused for keyboard selection', () => {
+      render(<Gallery images={[image1]} />);
+
+      const checkButton = getItemCheckButton();
+      checkButton.focus();
+      expect(checkButton).toHaveFocus();
+
+      fireEvent.focus(checkButton);
+
+      expect(checkButton).toHaveFocus();
+      expect(checkButton).toBeVisible();
     });
 
     it('should show check-button when item is hovered over and image selection is enabled', () => {
@@ -381,6 +419,48 @@ describe('Gallery Component', () => {
       fireEvent.mouseOver(getItem());
 
       expect(getItemCheckButton()).not.toBeVisible();
+      expect(getItemCheckButton()).toBeDisabled();
+    });
+
+    it('should show selected check-button as disabled when image selection is disabled', () => {
+      const handleSelect = vi.fn();
+      const image = { ...image1, isSelected: true };
+
+      render(
+        <Gallery
+          images={[image]}
+          enableImageSelection={false}
+          onSelect={handleSelect}
+        />,
+      );
+
+      const checkButton = getItemCheckButton();
+      expect(checkButton).toBeVisible();
+      expect(checkButton).toBeDisabled();
+      fireEvent.click(checkButton);
+      expect(handleSelect).not.toHaveBeenCalled();
+    });
+
+    it('should emit unique check-button gradient ids', () => {
+      render(
+        <Gallery
+          images={[
+            { ...image1, isSelected: true },
+            { ...image2, isSelected: true },
+          ]}
+        />,
+      );
+
+      const gradientIds = getItemCheckButtons().map((button) => {
+        const gradient = button.querySelector('radialGradient');
+        if (!gradient) {
+          throw new Error('Expected check button to contain a radialGradient.');
+        }
+        return gradient.id;
+      });
+
+      expect(new Set(gradientIds).size).toBe(gradientIds.length);
+      expect(gradientIds).not.toContain('shadow');
     });
 
     it('should call onSelect with index and image object arguments passed', () => {

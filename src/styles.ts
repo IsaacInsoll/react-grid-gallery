@@ -201,16 +201,25 @@ export const tagItem = (): CSSProperties => ({
 
 export const checkButton = ({
   isVisible,
+  disabled,
 }: {
   isVisible: boolean;
+  disabled?: boolean;
 }): CSSProperties => ({
-  visibility: isVisible ? 'visible' : 'hidden',
+  opacity: isVisible ? 1 : 0,
+  appearance: 'none',
   background: 'none',
+  boxSizing: 'content-box',
+  display: 'block',
   float: 'left',
   width: 36,
   height: 36,
   border: 'none',
-  padding: 6,
-  cursor: 'pointer',
-  pointerEvents: 'visible',
+  color: 'inherit',
+  font: 'inherit',
+  margin: 0,
+  padding: '2px 6px 10px',
+  textAlign: 'left',
+  cursor: disabled ? 'default' : 'pointer',
+  pointerEvents: isVisible && !disabled ? 'auto' : 'none',
 });

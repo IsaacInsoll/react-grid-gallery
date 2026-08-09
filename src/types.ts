@@ -110,7 +110,9 @@ export interface CheckButtonProps {
   isSelected?: boolean;
   isVisible?: boolean;
   onClick: (event: MouseEvent<HTMLElement>) => void;
+  label?: string;
   color?: string;
   selectedColor?: string;
   hoverColor?: string;
+  disabled?: boolean;
 }
