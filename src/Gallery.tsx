@@ -33,11 +33,18 @@ export const Gallery = <T extends ImageInterface>({
 
   const handleSelect = (index: number, event: MouseEvent<HTMLElement>) => {
     event.preventDefault();
-    onSelect(index, images[index], event);
+
+    const item = images[index];
+    if (!item) return;
+
+    onSelect(index, item, event);
   };
 
   const handleClick = (index: number, event: MouseEvent<HTMLElement>) => {
-    onClick(index, images[index], event);
+    const item = images[index];
+    if (!item) return;
+
+    onClick(index, item, event);
   };
 
   return (

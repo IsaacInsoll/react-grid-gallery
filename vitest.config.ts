@@ -2,6 +2,9 @@ import { configDefaults, defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
+    coverage: {
+      include: ['src/**'],
+    },
     environment: 'jsdom',
     exclude: configDefaults.exclude,
     include: ['test/unit/**/*.test.{ts,tsx}'],

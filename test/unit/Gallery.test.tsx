@@ -395,8 +395,12 @@ describe('Gallery Component', () => {
       );
       fireEvent.click(getItemCheckButton());
 
-      expect(handleSelect.mock.calls[0][0]).toEqual(0);
-      expect(handleSelect.mock.calls[0][1]).toEqual(image1);
+      expect(handleSelect).toHaveBeenNthCalledWith(
+        1,
+        0,
+        image1,
+        expect.objectContaining({}),
+      );
     });
   });
 });

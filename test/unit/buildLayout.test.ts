@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildLayout, buildLayoutFlat } from '../../src';
+import { getFirstRow, getItemAt } from './layoutTestHelpers';
 import type { BuildLayoutOptions, Image } from '../../src';
 
 const image100x100 = {
@@ -47,8 +48,9 @@ describe('buildLayout', () => {
     const rows = buildLayout(images, options);
 
     expect(images).toEqual(originalImages);
-    expect(rows[0][0]).not.toBe(images[0]);
-    expect(rows[0][1]).not.toBe(images[1]);
+    const firstRow = getFirstRow(rows);
+    expect(getItemAt(firstRow, 0)).not.toBe(images[0]);
+    expect(getItemAt(firstRow, 1)).not.toBe(images[1]);
   });
 
   it('should return custom image attributes', () => {
@@ -65,7 +67,7 @@ describe('buildLayout', () => {
 
     const rows = buildLayout<MyImage>([image], options);
 
-    expect(rows[0][0].customAttr).toBe('imageId');
+    expect(getItemAt(getFirstRow(rows), 0).customAttr).toBe('imageId');
   });
 
   it('should limit number of items when maxRows param passed', () => {
@@ -150,7 +152,7 @@ describe('buildLayout', () => {
     const images = [image100x100, image100x100, image100x100];
     const options = { containerWidth: 201.5, rowHeight: 100, margin: 0 };
 
-    const [row] = buildLayout(images, options);
+    const row = getFirstRow(buildLayout(images, options));
     const occupiedWidth = row.reduce(
       (width, item) => width + item.scaledWidth,
       0,
@@ -179,20 +181,24 @@ describe('buildLayout', () => {
   });
 
   it('should keep dimensions finite when every natural width rounds to zero', () => {
-    const [row] = buildLayout(
-      [
-        { src: 'first', width: 1, height: 1000 },
-        { src: 'second', width: 1, height: 1000 },
-      ],
-      {
-        containerWidth: 3,
-        rowHeight: 100,
-        margin: 2,
-      },
+    const row = getFirstRow(
+      buildLayout(
+        [
+          { src: 'first', width: 1, height: 1000 },
+          { src: 'second', width: 1, height: 1000 },
+        ],
+        {
+          containerWidth: 3,
+          rowHeight: 100,
+          margin: 2,
+        },
+      ),
     );
 
     expect(row).toHaveLength(1);
-    expect(row[0]).toEqual(
+
+    const item = getItemAt(row, 0);
+    expect(item).toEqual(
       expect.objectContaining({
         scaledWidth: 0,
         scaledHeight: 0,
@@ -202,10 +208,10 @@ describe('buildLayout', () => {
     );
     expect(
       [
-        row[0]?.scaledWidth,
-        row[0]?.scaledHeight,
-        row[0]?.viewportWidth,
-        row[0]?.marginLeft,
+        item.scaledWidth,
+        item.scaledHeight,
+        item.viewportWidth,
+        item.marginLeft,
       ].every((value) => Number.isFinite(value) && value >= 0),
     ).toBe(true);
   });
@@ -276,7 +282,7 @@ describe('buildLayout', () => {
     ];
     const options = { containerWidth: 503, rowHeight: 180, margin: 2 };
 
-    const [row] = buildLayout(images, options);
+    const row = getFirstRow(buildLayout(images, options));
     const occupiedWidth = row.reduce(
       (width, item) => width + item.scaledWidth + options.margin * 2,
       0,

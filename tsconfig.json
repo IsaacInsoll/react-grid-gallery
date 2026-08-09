@@ -11,6 +11,7 @@
     "noUncheckedSideEffectImports": true,
     "esModuleInterop": true,
     "strict": true,
+    "noUncheckedIndexedAccess": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "allowUnreachableCode": false,

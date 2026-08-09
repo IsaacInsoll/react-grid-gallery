@@ -81,7 +81,7 @@ test.describe('Gallery visual regression', () => {
       [1024, 640],
       [1366, 768],
       [1920, 1080],
-    ]) {
+    ] as const) {
       await page.setViewportSize({ width, height });
       await settleLayout(page);
 

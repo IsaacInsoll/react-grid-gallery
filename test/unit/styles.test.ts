@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildLayout } from '../../src';
 import { thumbnail, tileViewport, getStyle } from '../../src/styles';
+import { getFirstRow, getItemAt } from './layoutTestHelpers';
 import type { ImageExtended } from '../../src';
 
 const baseItem: ImageExtended = {
@@ -78,11 +79,14 @@ describe('styles', () => {
     });
 
     it('should inset a selected rescaled image without cropping it', () => {
-      const [[item]] = buildLayout([{ ...baseItem, isSelected: true }], {
-        containerWidth: 50,
-        rowHeight: 100,
-        margin: 0,
-      });
+      const row = getFirstRow(
+        buildLayout([{ ...baseItem, isSelected: true }], {
+          containerWidth: 50,
+          rowHeight: 100,
+          margin: 0,
+        }),
+      );
+      const item = getItemAt(row, 0);
 
       const result = thumbnail({ item });
 
@@ -97,17 +101,20 @@ describe('styles', () => {
     });
 
     it('should keep selected panoramic rows visible with nonnegative styles', () => {
-      const [[item]] = buildLayout(
-        [
-          {
-            src: 'panorama',
-            width: 6000,
-            height: 500,
-            isSelected: true,
-          },
-        ],
-        { containerWidth: 320, rowHeight: 180, margin: 2 },
+      const row = getFirstRow(
+        buildLayout(
+          [
+            {
+              src: 'panorama',
+              width: 6000,
+              height: 500,
+              isSelected: true,
+            },
+          ],
+          { containerWidth: 320, rowHeight: 180, margin: 2 },
+        ),
       );
+      const item = getItemAt(row, 0);
 
       expect(item).toEqual(
         expect.objectContaining({
