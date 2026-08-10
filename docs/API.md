@@ -39,7 +39,11 @@ remain available in callbacks and style functions.
 | `thumbnailImageComponent` | `ComponentType<ThumbnailImageProps<...>>` | Native `<img>`     |
 
 The containing element must have a width. `defaultContainerWidth` is useful for
-server rendering before `ResizeObserver` can report the browser width.
+server rendering before `ResizeObserver` can report the browser width. Control
+rendered thumbnail sizing with layout props such as `rowHeight`, `columnWidth`,
+and `margin`, or with a custom thumbnail component. Changing `Image.width` and
+`Image.height` changes the aspect ratio supplied to the layout calculation; it
+is not the supported way to request larger or smaller thumbnails.
 
 The package does not bundle a `ResizeObserver` polyfill. Without a native
 implementation, the gallery still measures its container once on mount but does
@@ -109,9 +113,9 @@ be spread into the native element.
 
 | Property           | Type               | Notes                                      |
 | ------------------ | ------------------ | ------------------------------------------ |
-| `src`              | `string`           | Required image resource                    |
-| `width`            | `number`           | Required intrinsic width                   |
-| `height`           | `number`           | Required intrinsic height                  |
+| `src`              | `string`           | Required image URL                         |
+| `width`            | `number`           | Required intrinsic pixel width             |
+| `height`           | `number`           | Required intrinsic pixel height            |
 | `key`              | `string \| number` | Optional stable gallery key                |
 | `nano`             | `string`           | Base64 placeholder shown behind the image  |
 | `alt`              | `string`           | Native image alternative text              |
@@ -128,6 +132,15 @@ optional `key: string | number`.
 
 When `caption` is a string, it also becomes the thumbnail image's native
 `title` attribute.
+
+`src` is passed through to the native `<img>` element. Local images therefore
+use normal React/browser asset handling: place files in your app's public/static
+directory and pass a URL such as `/photos/image.jpg`, or import an image with
+your bundler and pass the imported URL.
+
+`width` and `height` describe the source image's intrinsic dimensions so the
+gallery can preserve aspect ratio while calculating rows or masonry columns.
+They are not display-size props.
 
 ### Linked Tiles
 

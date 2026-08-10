@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { render, fireEvent, screen } from '@testing-library/react';
+import { act, render, fireEvent, screen } from '@testing-library/react';
 import { renderToString } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CheckButton } from '../../src/CheckButton';
@@ -56,7 +56,10 @@ describe('Gallery Component', () => {
     vi.clearAllMocks();
 
     // define clientWidth for gallery root element
-    Object.defineProperty(Element.prototype, 'clientWidth', { value: 400 });
+    Object.defineProperty(Element.prototype, 'clientWidth', {
+      configurable: true,
+      value: 400,
+    });
     // @ts-expect-error - the test only needs a stable width from the DOM API.
     Element.prototype.getBoundingClientRect = vi.fn(() => ({ width: 400 }));
   });
@@ -181,6 +184,43 @@ describe('Gallery Component', () => {
     rerender(<Gallery images={[image1, image2]} />);
 
     expect(getItems().length).toEqual(2);
+  });
+
+  it('should render images after a hidden container becomes measurable', () => {
+    let containerWidth = 0;
+    let resizeCallback: ResizeObserverCallback | undefined;
+
+    Object.defineProperty(Element.prototype, 'clientWidth', {
+      configurable: true,
+      get: () => containerWidth,
+    });
+    // @ts-expect-error - the test only needs a stable width from the DOM API.
+    Element.prototype.getBoundingClientRect = vi.fn(() => ({
+      width: containerWidth,
+    }));
+
+    class ResizeObserverMock implements ResizeObserver {
+      observe = vi.fn();
+      unobserve = vi.fn();
+      disconnect = vi.fn();
+
+      constructor(callback: ResizeObserverCallback) {
+        resizeCallback = callback;
+      }
+    }
+
+    vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+
+    render(<Gallery images={[image1, image2]} />);
+
+    expect(screen.queryAllByTestId('grid-gallery-item')).toHaveLength(0);
+
+    containerWidth = 400;
+    act(() => {
+      resizeCallback?.([], {} as ResizeObserver);
+    });
+
+    expect(getItems()).toHaveLength(2);
   });
 
   it('should render thumbnails on server-side when defaultContainerWidth prop is passed', () => {

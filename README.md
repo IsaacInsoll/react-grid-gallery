@@ -59,6 +59,13 @@ const images: Image[] = [
 export const PhotoGallery = () => <Gallery images={images} />;
 ```
 
+`src` is passed to a native `<img>` element, so local images work the same way
+they do elsewhere in React: use a public/static URL such as
+`/photos/after-rain.jpg`, or import an asset with your bundler and pass the
+imported URL. The `width` and `height` fields are the image's intrinsic pixel
+dimensions and are used to preserve aspect ratio; they do not set the rendered
+thumbnail size.
+
 Choose a layout with the `layout` prop:
 
 ```tsx
@@ -68,7 +75,9 @@ Choose a layout with the `layout` prop:
 
 The gallery fills the width of its containing element. Give that container a
 width before rendering the gallery. Supply `defaultContainerWidth` when server
-rendering requires deterministic initial markup.
+rendering requires deterministic initial markup. Control rendered thumbnail
+sizing with layout props such as `rowHeight`, `columnWidth`, and `margin`, or
+with a custom thumbnail component.
 
 ## Documentation
 
