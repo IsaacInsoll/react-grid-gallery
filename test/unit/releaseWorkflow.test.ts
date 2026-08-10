@@ -1,6 +1,25 @@
 import { describe, expect, it } from 'vitest';
+import { assertPermittedReleaseStatus } from '../../scripts/check-release-worktree.mjs';
 import { getReleaseMetadata } from '../../scripts/release-metadata.mjs';
 import { assertPublishedPackage } from '../../scripts/verify-published-package.mjs';
+
+describe('release worktree guard', () => {
+  it('accepts a clean tracked worktree', () => {
+    expect(() => assertPermittedReleaseStatus([])).not.toThrow();
+  });
+
+  it('accepts one unstaged changelog update', () => {
+    expect(() =>
+      assertPermittedReleaseStatus([' M CHANGELOG.md']),
+    ).not.toThrow();
+  });
+
+  it('rejects unrelated tracked changes', () => {
+    expect(() => assertPermittedReleaseStatus([' M package.json'])).toThrow(
+      'clean tracked worktree or exactly one unstaged tracked change: CHANGELOG.md',
+    );
+  });
+});
 
 describe('release workflow metadata', () => {
   it('uses next for a prerelease', () => {

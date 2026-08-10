@@ -94,9 +94,10 @@ Never release the historical `0.0.0-development` placeholder. Release from the
 current version on synchronized `main`.
 
 Update local `main`, then manually add one non-empty `## v<version>` or
-`## v<version> / YYYY-MM-DD` section to `CHANGELOG.md`. That file must be the
-only unstaged tracked change. Untracked planning files are not added to the
-release commit.
+`## v<version> / YYYY-MM-DD` section to `CHANGELOG.md`. Commit that curated
+changelog section before releasing, or leave it as the only unstaged tracked
+change if it should be included in the release-it version commit. Untracked
+planning files are not added to the release commit.
 
 ```sh
 git switch main
@@ -107,7 +108,8 @@ npm run release -- <version>
 ```
 
 The worktree guard fetches `origin/main`, requires local `main` to match it
-exactly, and rejects every tracked change except the unstaged changelog update.
+exactly, and rejects every tracked change except an optional unstaged changelog
+update.
 The dry-run preflight validates and prints the exact curated release-note
 section before previewing release-it's write operations. It does not repeat the
 complete release gate. Review that printed text before continuing. The real run

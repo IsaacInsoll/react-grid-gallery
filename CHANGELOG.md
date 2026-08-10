@@ -17,6 +17,11 @@ links.
 - Add `buildMasonryLayout` and masonry layout item types for consumers that use
   the package layout helpers directly.
 
+### Documentation
+
+- Add a hosted Storybook documentation site with live examples, recipes, API
+  guides, migration notes, and visual regression coverage.
+
 ### Accessibility
 
 - Render selection controls as real buttons with keyboard activation,
