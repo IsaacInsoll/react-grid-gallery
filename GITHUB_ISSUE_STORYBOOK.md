@@ -272,14 +272,19 @@ build` job so a broken documentation site cannot merge through auto-merge.
 ## Acceptance Criteria
 
 - [x] `npm run storybook` starts the site locally
-- [ ] `npm run build-storybook` succeeds in hosted CI (pending local review and
-      pull request)
+- [x] `npm run build-storybook` succeeds in hosted CI through
+      [PR #27](https://github.com/IsaacInsoll/react-grid-gallery/pull/27) and its
+      successful required
+      [CI run](https://github.com/IsaacInsoll/react-grid-gallery/actions/runs/31359292755)
 - [x] Storybook-backed Playwright scenarios use the same static build locally and
       in CI
 - [x] Existing dist-backed Playwright coverage remains green until an explicitly
       reviewed parity migration preserves equivalent built-artifact coverage
-- [ ] The deployed Pages site works from the repository's configured base path
-      (Pages is configured for Actions; deployment awaits merge)
+- [x] The deployed Pages site works from the repository's configured base path;
+      the first protected
+      [Pages deployment](https://github.com/IsaacInsoll/react-grid-gallery/actions/runs/31359400123)
+      succeeded and serves the
+      [maintained documentation](https://isaacinsoll.github.io/react-grid-gallery/)
 - [x] Component controls and curated docs accurately describe the public API
 - [x] Storybook does not duplicate authoritative Markdown documentation or load
       remote runtime assets

@@ -83,6 +83,24 @@ Set and keep package publishing access configured to require 2FA and disallow
 tokens. npm trusted publishing continues to work because it uses short-lived
 OIDC credentials rather than traditional automation tokens.
 
+Verify this package-specific control in npm's web interface before a stable
+release, following npm's
+[trusted-publishing guidance](https://docs.npmjs.com/trusted-publishers/#recommended-restrict-token-access-when-using-trusted-publishers);
+the CLI cannot confirm that traditional tokens are disallowed:
+
+1. Sign in to npmjs.com and open `@picr/react-grid-gallery`.
+2. Open **Settings**, then find **Publishing access**.
+3. Select **Require two-factor authentication and disallow tokens
+   (recommended)**.
+4. Click **Update Package Settings** if the selection changed, completing the
+   requested 2FA challenge.
+5. Confirm the same option remains selected after the settings page reloads.
+
+This restriction applies to traditional granular-token authentication, not the
+short-lived OIDC credentials issued to the configured trusted publisher. Keep
+the trusted publisher limited to `npm stage publish`; the staged package still
+requires a maintainer's explicit 2FA approval before publication.
+
 The bootstrap token was read only by the `1.0.0-rc.0` publish step. Both the
 GitHub environment secret and the corresponding granular npm token have been
 removed, and the one-off token branch has been removed from the permanent

@@ -1802,6 +1802,15 @@ applications.`
     the manager never exposes an unpainted light strip below short stories in
     dark mode; keep inline documentation canvases content-sized to avoid
     restoring their resize feedback loop.
+  - Completed 2026-08-10 through
+    [PR #27](https://github.com/IsaacInsoll/react-grid-gallery/pull/27): all
+    required hosted checks passed in
+    [CI run #31359292755](https://github.com/IsaacInsoll/react-grid-gallery/actions/runs/31359292755),
+    including the clean-clone package-root type-resolution correction found by
+    the first hosted attempt. The protected
+    [Pages run #31359400123](https://github.com/IsaacInsoll/react-grid-gallery/actions/runs/31359400123)
+    then deployed the maintained documentation successfully at the configured
+    repository base path.
 - Consumer fixtures: keep at least one Vite + React + TypeScript smoke test for
   packed package installs.
 
@@ -2051,3 +2060,20 @@ informed this package API and is credited in the changelog and
 acknowledgements. Only the reusable library capability was adopted; PICR
 backend, GraphQL, branding, and administration work remain outside this
 package.
+
+## Post-1.0: Release 1.1.0
+
+The maintainer decided on 2026-08-10 to release `1.1.0` from the current
+post-Storybook `main` state after manually confirming npm's package-level
+**Require two-factor authentication and disallow tokens** publishing-access
+setting. Do not add upstream-triage fixes or unrelated features to this release
+without a new explicit scope decision.
+
+Immediately before running the documented release process, complete the
+existing `v1.1.0` changelog section with the maintained Storybook documentation
+launch and confirm its release date. Keep that changelog edit as the only
+unstaged tracked change required by `docs/RELEASING.md`; do not commit it through
+an ordinary documentation pull request first. Run the full stable-release flow,
+approve the staged package with npm 2FA, move `next` to `1.1.0` after npm
+publication, and require finalization to verify both `latest` and `next` before
+publishing the GitHub Release.
