@@ -1,6 +1,6 @@
 {
   "name": "@picr/react-grid-gallery",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Responsive image gallery component with justified and masonry layouts for modern React applications.",
   "type": "module",
   "types": "./dist/index.d.ts",
