@@ -5,17 +5,21 @@ import { assertPublishedPackage } from '../../scripts/verify-published-package.m
 
 describe('release worktree guard', () => {
   it('accepts a clean tracked worktree', () => {
-    expect(() => assertPermittedReleaseStatus([])).not.toThrow();
+    expect(() => {
+      assertPermittedReleaseStatus([]);
+    }).not.toThrow();
   });
 
   it('accepts one unstaged changelog update', () => {
-    expect(() =>
-      assertPermittedReleaseStatus([' M CHANGELOG.md']),
-    ).not.toThrow();
+    expect(() => {
+      assertPermittedReleaseStatus([' M CHANGELOG.md']);
+    }).not.toThrow();
   });
 
   it('rejects unrelated tracked changes', () => {
-    expect(() => assertPermittedReleaseStatus([' M package.json'])).toThrow(
+    expect(() => {
+      assertPermittedReleaseStatus([' M package.json']);
+    }).toThrow(
       'clean tracked worktree or exactly one unstaged tracked change: CHANGELOG.md',
     );
   });

@@ -91,6 +91,9 @@ retains the complete inherited Git history.
 
 - Run the checks applicable to the current migration stage and report exactly
   which checks were run. Do not claim success for checks that were skipped.
+- Before committing any repository change, run `npm run release:check` unless
+  the maintainer explicitly asks for a narrower check; if it is skipped, record
+  the reason in the final handoff.
 - Test package behavior through the packed artifact where exports, declarations,
   peer dependencies, or published contents are involved. Source-only tests are
   not sufficient for packaging changes.
@@ -117,6 +120,11 @@ retains the complete inherited Git history.
 - Keep ESLint and Prettier responsibilities separate. Run `npm run lint` for
   typed correctness/framework checks and `npm run format:check` for formatting;
   both reject CI changes independently.
+- When tests import local ESM utility scripts from `scripts/*.mjs`, add or
+  update the matching `scripts/*.d.mts` declaration file in the same change.
+  Verify those imports with `npm run typecheck` and `npm run lint`; a focused
+  Vitest run alone is not enough because it does not check declaration
+  resolution or typed ESLint rules.
 - The inherited Nextra/Create React App examples and Parcel playground were
   deliberately removed during first-release cleanup. Keep maintained browser
   fixtures under `test/fixtures/`; a future Storybook site is tracked
