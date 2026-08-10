@@ -12,6 +12,7 @@ for (const [name, scenario, customThumbnailCount, linkCount] of [
     imagesCount,
     imagesCount,
   ],
+  ['a masonry gallery', 'masonry', 0, 0],
 ] as const) {
   test(`renders and hydrates ${name} with React 19`, async ({ page }) => {
     const errors: string[] = [];

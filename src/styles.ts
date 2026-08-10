@@ -46,6 +46,17 @@ export const gallery: CSSProperties = {
   flexWrap: 'wrap',
 };
 
+export const masonryGallery: CSSProperties = {
+  display: 'flex',
+  alignItems: 'flex-start',
+};
+
+export const masonryColumn: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  flexShrink: 0,
+};
+
 export const thumbnail = ({ item }: { item: ImageExtended }): CSSProperties => {
   const rotationTransformValue = item.orientation
     ? rotationTransformMap[item.orientation]

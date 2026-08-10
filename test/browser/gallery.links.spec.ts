@@ -113,4 +113,25 @@ test.describe('Linked gallery tiles', () => {
 
     await expectLinkedDestination(page);
   });
+
+  test('focuses masonry selection button before the linked viewport', async ({
+    page,
+  }) => {
+    await openLinkedGallery(page, 'masonry-linked');
+
+    const button = page
+      .locator('.ReactGridGallery_masonry')
+      .getByRole('button', { name: 'Select image' })
+      .first();
+    const link = page
+      .locator('.ReactGridGallery_masonry')
+      .getByRole('link')
+      .first();
+
+    await page.keyboard.press('Tab');
+    await expect(button).toBeFocused();
+
+    await page.keyboard.press('Tab');
+    await expect(link).toBeFocused();
+  });
 });

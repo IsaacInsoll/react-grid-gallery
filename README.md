@@ -1,6 +1,7 @@
 # @picr/react-grid-gallery
 
-A justified image gallery component for modern React applications.
+A responsive image gallery component with justified and masonry layouts for
+modern React applications.
 
 This project is a maintained fork of
 [`benhowell/react-grid-gallery`](https://github.com/benhowell/react-grid-gallery).
@@ -56,6 +57,13 @@ const images: Image[] = [
 ];
 
 export const PhotoGallery = () => <Gallery images={images} />;
+```
+
+Choose a layout with the `layout` prop:
+
+```tsx
+<Gallery images={images} layout="justified" rowHeight={180} />
+<Gallery images={images} layout="masonry" columnWidth={180} />
 ```
 
 The gallery fills the width of its containing element. Give that container a

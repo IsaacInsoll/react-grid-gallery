@@ -3,6 +3,7 @@ import {
   Gallery,
   buildLayout,
   buildLayoutFlat,
+  buildMasonryLayout,
 } from '@picr/react-grid-gallery';
 import type {
   BuildLayoutOptions,
@@ -182,12 +183,25 @@ const indexedImage: ImageExtendedWithIndex<CustomImage> = {
 };
 const masonryColumn: MasonryColumn<CustomImage> = [indexedImage];
 const masonryLayout: MasonryLayout<CustomImage> = [masonryColumn];
+const masonryRows: MasonryLayout<CustomImage> = buildMasonryLayout(
+  images,
+  masonryOptions,
+);
 
 const [firstLayoutImage] = flat;
 if (!firstLayoutImage) {
   throw new Error('Expected the layout fixture to contain an image.');
 }
 const customId: string = firstLayoutImage.id;
+const [firstMasonryColumn] = masonryRows;
+if (!firstMasonryColumn) {
+  throw new Error('Expected the masonry fixture to contain a column.');
+}
+const [firstMasonryImage] = firstMasonryColumn;
+if (!firstMasonryImage) {
+  throw new Error('Expected the masonry fixture to contain an image.');
+}
+const masonryCustomId: string = firstMasonryImage.id;
 
 export {
   checkButtonElement,
@@ -201,9 +215,11 @@ export {
   invalidMasonryRowsProps,
   justifiedGalleryProps,
   layoutName,
+  masonryCustomId,
   masonryGalleryProps,
   masonryLayout,
   masonryOptions,
+  masonryRows,
   rows,
   styleContext,
 };

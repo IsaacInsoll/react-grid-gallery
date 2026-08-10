@@ -5,6 +5,28 @@ fork's [GitHub Releases](https://github.com/IsaacInsoll/react-grid-gallery/relea
 page. The entries below preserve the original project's release history and
 links.
 
+## v1.1.0 / 2026-08-10
+
+### Features
+
+- Add `layout="masonry"` for column-based gallery rendering with target
+  `columnWidth` sizing.
+- Add `buildMasonryLayout` and masonry layout item types for consumers that use
+  the package layout helpers directly.
+
+### Accessibility
+
+- Render selection controls as real buttons with keyboard activation,
+  `aria-pressed`, disabled state, and configurable labels.
+- Change the selection control markup from `div` to `button`.
+
+### Fixes
+
+- Fix duplicate SVG gradient IDs emitted by selection controls.
+- Fix layout-helper crashes for invalid container widths, including masonry
+  `RangeError` cases and a justified-layout stack overflow for negative widths.
+- Mark unused `ImageProps.height` as deprecated.
+
 ## v1.0.0 / 2026-08-05
 
 This is the first stable release of `@picr/react-grid-gallery`, a maintained

@@ -8,7 +8,9 @@ export function useContainerWidth(defaultContainerWidth: number): {
   const ref = useRef<HTMLElement | null>(null);
   const observerRef = useRef<ResizeObserver | undefined>(undefined);
 
-  const [containerWidth, setContainerWidth] = useState(defaultContainerWidth);
+  const [containerWidth, setContainerWidth] = useState(() =>
+    Math.floor(defaultContainerWidth),
+  );
 
   const containerRef = useCallback((node: HTMLElement | null) => {
     observerRef.current?.disconnect();

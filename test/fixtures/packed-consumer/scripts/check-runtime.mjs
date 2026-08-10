@@ -5,6 +5,7 @@ const expectedExports = [
   'Gallery',
   'buildLayout',
   'buildLayoutFlat',
+  'buildMasonryLayout',
 ].sort();
 const actualExports = Object.keys(gallery).sort();
 const missingExports = expectedExports.filter(

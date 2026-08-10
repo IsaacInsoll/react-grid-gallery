@@ -8,6 +8,7 @@ import {
   Gallery,
   buildLayout,
   buildLayoutFlat,
+  buildMasonryLayout,
 } from '@picr/react-grid-gallery';
 import type { GalleryProps, Image } from '@picr/react-grid-gallery';
 ```
@@ -26,8 +27,10 @@ remain available in callbacks and style functions.
 | `enableImageSelection`    | `boolean`                                 | `true`             |
 | `onSelect`                | `EventHandler<T>`                         | No-op              |
 | `onClick`                 | `EventHandler<T>`                         | No-op              |
+| `layout`                  | `'justified' \| 'masonry'`                | `justified`        |
 | `rowHeight`               | `number`                                  | `180`              |
 | `maxRows`                 | `number`                                  | Unlimited          |
+| `columnWidth`             | `number`                                  | `180`              |
 | `margin`                  | `number`                                  | `2`                |
 | `defaultContainerWidth`   | `number`                                  | `0`                |
 | `tileViewportStyle`       | `StyleProp<ImageExtended<T>>`             | Internal style     |
@@ -48,6 +51,20 @@ tests generally do not need one.
 the container at that height is proportionally rescaled so every image remains
 fully visible. This includes an overflowing final or single-image row. An
 underfilled final row keeps the target height and its natural scaled widths.
+
+### Choosing A Layout
+
+`layout="justified"` is the default and renders the inherited row-based
+gallery. `rowHeight` and `maxRows` apply only to justified layout.
+
+`layout="masonry"` renders column-based masonry layout. `columnWidth` is a
+target width rather than a guaranteed width; the gallery calculates an actual
+column width from the container so columns fit without horizontal overflow.
+Masonry layout does not have a `maxRows` equivalent. Slice `images` before
+passing them to `Gallery` when a masonry gallery should show fewer items.
+Masonry column balance is calculated from image geometry only. In-flow content
+below the viewport, such as `thumbnailCaption`, can make rendered columns less
+even because its height cannot be known by the layout helper.
 
 ### Selection
 
@@ -164,6 +181,10 @@ focus, exposes its selected state with `aria-pressed`, and can be activated with
 Enter or Space. Disabling image selection disables these buttons and removes
 them from the tab order.
 
+Masonry layout renders columns in DOM order, so keyboard focus moves through
+all tiles in the first column before moving to the next column. Within a linked
+selectable tile, focus reaches the selection button before the linked viewport.
+
 #### Containment
 
 The built-in selection button, tags, overlays, and thumbnail caption are
@@ -217,6 +238,10 @@ including custom application fields.
 Related exported types are `StyleProp<T>`, `StyleFunction<T>`, and
 `StyleFunctionContext<T>`.
 
+`scaledWidth`, `scaledHeight`, `viewportWidth`, `marginLeft`, and
+`originalIndex` are reserved layout fields. Consumer image types should not
+define their own fields with those names.
+
 ## Layout Helpers
 
 ```ts
@@ -228,6 +253,12 @@ const rows = buildLayout(images, {
 });
 
 const flat = buildLayoutFlat(images, { containerWidth: 960 });
+
+const columns = buildMasonryLayout(images, {
+  containerWidth: 960,
+  columnWidth: 180,
+  margin: 2,
+});
 ```
 
 `buildLayout` returns `ImageExtendedRow<T>[]`; `buildLayoutFlat` returns one
@@ -236,6 +267,10 @@ flattened `ImageExtendedRow<T>`. `ImageExtended<T>` adds `scaledWidth`,
 `marginLeft` remains available for compatibility but is `0` for rescaled rows;
 the gallery now fits them by changing their dimensions instead of applying a
 negative horizontal cropping offset.
+
+`buildMasonryLayout` returns `MasonryLayout<T>`, an array of columns. Each item
+is an `ImageExtendedWithIndex<T>` with `originalIndex`, so consumers can map
+layout items back to the original `images` array.
 
 ## `CheckButton`
 

@@ -2,12 +2,38 @@ import type {
   ImageExtended,
   Image,
   BuildLayoutOptions,
+  BuildMasonryLayoutOptions,
   ImageExtendedRow,
+  MasonryLayout,
 } from './types';
 
 type NormalizedBuildLayoutOptions = BuildLayoutOptions & {
   rowHeight: number;
   margin: number;
+};
+
+export const DEFAULT_MASONRY_COLUMN_WIDTH = 180;
+export const DEFAULT_MASONRY_MARGIN = 2;
+
+export const normalizeMasonryOptions = ({
+  containerWidth,
+  columnWidth = DEFAULT_MASONRY_COLUMN_WIDTH,
+  margin = DEFAULT_MASONRY_MARGIN,
+}: BuildMasonryLayoutOptions): Required<BuildMasonryLayoutOptions> => {
+  const safeColumnWidth =
+    Number.isFinite(columnWidth) && columnWidth >= 1
+      ? Math.floor(columnWidth)
+      : DEFAULT_MASONRY_COLUMN_WIDTH;
+  const requestedMargin =
+    Number.isFinite(margin) && margin >= 0 ? margin : DEFAULT_MASONRY_MARGIN;
+  const maxMargin = Math.max(0, Math.floor(containerWidth / 2));
+  const safeMargin = Math.min(requestedMargin, maxMargin);
+
+  return {
+    containerWidth,
+    columnWidth: safeColumnWidth,
+    margin: safeMargin,
+  };
 };
 
 const getRow = <T extends Image = Image>(
@@ -97,7 +123,7 @@ export const buildLayout = <T extends Image = Image>(
   // Retain a defensive runtime guard for untyped JavaScript consumers.
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!images) return [];
-  if (!containerWidth) return [];
+  if (!Number.isFinite(containerWidth) || containerWidth <= 0) return [];
 
   const options = { containerWidth, maxRows, rowHeight, margin };
   return getRows(images, options);
@@ -112,4 +138,72 @@ export const buildLayoutFlat = <T extends Image = Image>(
     (items, row) => items.concat(row),
     [],
   );
+};
+
+export const buildMasonryLayout = <T extends Image = Image>(
+  images: T[],
+  options: BuildMasonryLayoutOptions,
+): MasonryLayout<T> => {
+  // Retain defensive runtime guards for untyped JavaScript consumers.
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (!images) return [];
+  if (
+    !Number.isFinite(options.containerWidth) ||
+    options.containerWidth <= 0 ||
+    images.length === 0
+  ) {
+    return [];
+  }
+
+  const { containerWidth, columnWidth, margin } =
+    normalizeMasonryOptions(options);
+  const footprint = columnWidth + margin * 2;
+  const targetColumnCount = Math.max(1, Math.floor(containerWidth / footprint));
+  const columnCount = Math.min(images.length, targetColumnCount);
+  const availableWidth = containerWidth - targetColumnCount * margin * 2;
+  const actualColumnWidth = Math.floor(availableWidth / targetColumnCount);
+  const columns: MasonryLayout<T> = Array.from(
+    { length: columnCount },
+    () => [],
+  );
+  const columnHeights = Array.from({ length: columnCount }, () => 0);
+
+  images.forEach((image, originalIndex) => {
+    let shortestColumnIndex = 0;
+    for (
+      let columnIndex = 1;
+      columnIndex < columnHeights.length;
+      columnIndex += 1
+    ) {
+      if (
+        (columnHeights[columnIndex] ?? Number.POSITIVE_INFINITY) <
+        (columnHeights[shortestColumnIndex] ?? Number.POSITIVE_INFINITY)
+      ) {
+        shortestColumnIndex = columnIndex;
+      }
+    }
+    const computedHeight = Math.floor(
+      actualColumnWidth * (image.height / image.width),
+    );
+    const scaledHeight =
+      Number.isFinite(computedHeight) && computedHeight > 0
+        ? computedHeight
+        : actualColumnWidth;
+    const column = columns[shortestColumnIndex];
+    const columnHeight = columnHeights[shortestColumnIndex];
+    if (!column || columnHeight === undefined) return;
+
+    column.push({
+      ...image,
+      originalIndex,
+      scaledHeight,
+      scaledWidth: actualColumnWidth,
+      viewportWidth: actualColumnWidth,
+      marginLeft: 0,
+    });
+    columnHeights[shortestColumnIndex] =
+      columnHeight + scaledHeight + margin * 2;
+  });
+
+  return columns;
 };

@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { buildLayout } from '../../src';
 import {
   checkButton,
+  masonryColumn,
+  masonryGallery,
   thumbnail,
   tileViewport,
   getStyle,
@@ -181,6 +183,20 @@ describe('styles', () => {
         margin: 16,
         overflow: 'hidden',
         width: 68,
+      });
+    });
+  });
+
+  describe('masonry', () => {
+    it('should keep masonry columns from shrinking below tile width', () => {
+      expect(masonryGallery).toEqual({
+        display: 'flex',
+        alignItems: 'flex-start',
+      });
+      expect(masonryColumn).toEqual({
+        display: 'flex',
+        flexDirection: 'column',
+        flexShrink: 0,
       });
     });
   });

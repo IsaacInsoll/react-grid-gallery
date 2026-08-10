@@ -36,6 +36,15 @@ const getItemCheckButton = () =>
   screen.getByTestId('grid-gallery-item_check-button');
 const getItemCheckButtons = () =>
   screen.getAllByTestId('grid-gallery-item_check-button');
+const getMasonryColumns = () =>
+  Array.from(document.querySelectorAll('.ReactGridGallery_masonry-column'));
+const getElementAt = <T extends Element>(elements: T[], index: number) => {
+  const element = elements[index];
+  if (!element) {
+    throw new Error(`Expected element at index ${String(index)}.`);
+  }
+  return element;
+};
 
 // emulating server-side rendering
 // https://github.com/testing-library/react-testing-library/issues/561#issuecomment-1189796200
@@ -189,6 +198,190 @@ describe('Gallery Component', () => {
 
     expect(getItemViewport().tagName).toBe('A');
     expect(getItemViewport()).toHaveAttribute('href', linkedImage.href);
+  });
+
+  describe('Masonry Layout', () => {
+    const masonryImages = [
+      { src: 'short-0', width: 100, height: 100 },
+      { src: 'tall-1', width: 100, height: 300 },
+      { src: 'short-2', width: 100, height: 100 },
+      { src: 'short-3', width: 100, height: 100 },
+    ];
+
+    it('should render justified layout by default', () => {
+      render(<Gallery images={[image1, image2]} />);
+
+      expect(document.querySelector('.ReactGridGallery_masonry')).toBeNull();
+      expect(getItems()).toHaveLength(2);
+    });
+
+    it('should render explicit justified layout like the default layout', () => {
+      render(<Gallery images={[image1]} layout="justified" rowHeight={100} />);
+
+      expect(document.querySelector('.ReactGridGallery_masonry')).toBeNull();
+      expect(getItemThumbnail()).toHaveStyle({ height: '100px' });
+    });
+
+    it('should render all masonry images', () => {
+      render(<Gallery images={masonryImages} layout="masonry" />);
+
+      expect(
+        document.querySelector('.ReactGridGallery_masonry'),
+      ).not.toBeNull();
+      expect(getItems()).toHaveLength(masonryImages.length);
+    });
+
+    it('should not render empty masonry columns when images are empty', () => {
+      render(<Gallery images={[]} layout="masonry" />);
+
+      expect(getMasonryColumns()).toHaveLength(0);
+    });
+
+    it('should make masonry column count respond to columnWidth', () => {
+      const { rerender } = render(
+        <Gallery images={masonryImages} layout="masonry" columnWidth={180} />,
+      );
+
+      expect(getMasonryColumns()).toHaveLength(2);
+
+      rerender(
+        <Gallery images={masonryImages} layout="masonry" columnWidth={100} />,
+      );
+
+      expect(getMasonryColumns()).toHaveLength(3);
+    });
+
+    it('should render masonry thumbnails on server-side when defaultContainerWidth prop is passed', () => {
+      renderStatic(
+        <Gallery
+          images={masonryImages}
+          layout="masonry"
+          defaultContainerWidth={400}
+        />,
+      );
+
+      expect(getMasonryColumns()).toHaveLength(2);
+      expect(getItems()).toHaveLength(masonryImages.length);
+    });
+
+    it('should call onClick with original image index in masonry layout', () => {
+      const handleClick = vi.fn<EventHandler<(typeof masonryImages)[number]>>();
+
+      render(
+        <Gallery
+          images={masonryImages}
+          layout="masonry"
+          onClick={handleClick}
+        />,
+      );
+      fireEvent.click(
+        getElementAt(screen.getAllByTestId('grid-gallery-item_viewport'), 1),
+      );
+
+      expect(handleClick).toHaveBeenNthCalledWith(
+        1,
+        2,
+        masonryImages[2],
+        expect.objectContaining({}),
+      );
+    });
+
+    it('should call onSelect with original image index in masonry layout', () => {
+      const handleSelect =
+        vi.fn<EventHandler<(typeof masonryImages)[number]>>();
+
+      render(
+        <Gallery
+          images={masonryImages}
+          layout="masonry"
+          onSelect={handleSelect}
+        />,
+      );
+      fireEvent.click(
+        getElementAt(
+          screen.getAllByTestId('grid-gallery-item_check-button'),
+          1,
+        ),
+      );
+
+      expect(handleSelect).toHaveBeenNthCalledWith(
+        1,
+        2,
+        masonryImages[2],
+        expect.objectContaining({}),
+      );
+    });
+
+    it('should not warn about fallback React keys in masonry layout', () => {
+      const consoleError = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
+
+      render(<Gallery images={masonryImages} layout="masonry" />);
+
+      expect(
+        consoleError.mock.calls.some((call) =>
+          call.some((message) =>
+            String(message).includes(
+              'Encountered two children with the same key',
+            ),
+          ),
+        ),
+      ).toBe(false);
+      consoleError.mockRestore();
+    });
+
+    it('should render masonry linked tiles as anchors', () => {
+      render(<Gallery images={[linkedImage]} layout="masonry" />);
+
+      expect(getItemViewport().tagName).toBe('A');
+      expect(getItemViewport()).toHaveAttribute('href', linkedImage.href);
+    });
+
+    it('should render custom thumbnails in masonry layout', () => {
+      const thumbnailImageComponent = (props: ThumbnailImageProps) => (
+        <img
+          {...props.imageProps}
+          title={props.imageProps.title ?? undefined}
+          className="masonry-custom-thumbnail"
+        />
+      );
+
+      render(
+        <Gallery
+          images={[image1]}
+          layout="masonry"
+          thumbnailImageComponent={thumbnailImageComponent}
+        />,
+      );
+
+      expect(getItemThumbnail()).toHaveClass('masonry-custom-thumbnail');
+    });
+
+    it('should call masonry style functions with extended item dimensions', () => {
+      const thumbnailStyle = vi.fn(({ item }: { item: ImageExtended }) => ({
+        opacity: item.scaledWidth > 0 ? 0.5 : 1,
+      }));
+
+      render(
+        <Gallery
+          images={[image1]}
+          layout="masonry"
+          thumbnailStyle={thumbnailStyle}
+        />,
+      );
+
+      const [firstCall] = thumbnailStyle.mock.calls;
+      if (!firstCall) {
+        throw new Error('Expected thumbnailStyle to be called.');
+      }
+      const [styleContext] = firstCall;
+      expect(styleContext.item.scaledWidth).toEqual(expect.any(Number));
+      expect(styleContext.item.scaledHeight).toEqual(expect.any(Number));
+      expect(styleContext.item.viewportWidth).toEqual(expect.any(Number));
+      expect(styleContext.item.marginLeft).toBe(0);
+      expect(getItemThumbnail()).toHaveStyle({ opacity: '0.5' });
+    });
   });
 
   describe('Image Options', () => {

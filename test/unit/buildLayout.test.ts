@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { buildLayout, buildLayoutFlat } from '../../src';
+import { buildLayout, buildLayoutFlat, buildMasonryLayout } from '../../src';
 import { getFirstRow, getItemAt } from './layoutTestHelpers';
-import type { BuildLayoutOptions, Image } from '../../src';
+import type { BuildLayoutOptions, Image, MasonryLayout } from '../../src';
 
 const image100x100 = {
   src: '',
@@ -35,6 +35,14 @@ describe('buildLayout', () => {
     const rows = buildLayout(images, options);
 
     expect(rows).toEqual([]);
+  });
+
+  it('should return empty array when containerWidth is not finite or positive', () => {
+    for (const containerWidth of [-100, Number.NaN, Number.POSITIVE_INFINITY]) {
+      const rows = buildLayout([image100x100], { containerWidth });
+
+      expect(rows).toEqual([]);
+    }
   });
 
   it('should not modify passed image objects', () => {
@@ -370,5 +378,329 @@ describe('buildLayoutFlat', () => {
     const rows = buildLayoutFlat(images, options);
 
     expect(rows.length).toEqual(3);
+  });
+});
+
+describe('buildMasonryLayout', () => {
+  const flattenMasonryLayout = <T extends Image>(layout: MasonryLayout<T>) =>
+    layout.flat();
+
+  it('should return empty array when images param not passed', () => {
+    const images = undefined as unknown as [];
+
+    const columns = buildMasonryLayout(images, { containerWidth: 1000 });
+
+    expect(columns).toEqual([]);
+  });
+
+  it("should return empty array when containerWidth isn't defined", () => {
+    const options = {} as BuildLayoutOptions;
+
+    const columns = buildMasonryLayout([image100x100], options);
+
+    expect(columns).toEqual([]);
+  });
+
+  it('should return empty array when containerWidth is 0', () => {
+    const columns = buildMasonryLayout([image100x100], {
+      containerWidth: 0,
+    });
+
+    expect(columns).toEqual([]);
+  });
+
+  it('should return empty array when containerWidth is not finite or positive', () => {
+    for (const containerWidth of [-100, Number.NaN, Number.POSITIVE_INFINITY]) {
+      const columns = buildMasonryLayout([image100x100], { containerWidth });
+
+      expect(columns).toEqual([]);
+    }
+  });
+
+  it('should return empty array for empty images', () => {
+    const columns = buildMasonryLayout([], {
+      containerWidth: 400,
+      columnWidth: 100,
+      margin: 2,
+    });
+
+    expect(columns).toEqual([]);
+  });
+
+  it('should not modify passed image objects', () => {
+    const images = [
+      { ...image100x100, src: 'first' },
+      { ...image100x100, src: 'second' },
+    ];
+    const originalImages = structuredClone(images);
+
+    const columns = buildMasonryLayout(images, {
+      containerWidth: 400,
+      columnWidth: 100,
+      margin: 0,
+    });
+
+    expect(images).toEqual(originalImages);
+    expect(getItemAt(columns[0] ?? [], 0)).not.toBe(images[0]);
+  });
+
+  it('should return custom image attributes', () => {
+    interface MyImage extends Image {
+      customAttr: string;
+    }
+    const image: MyImage = {
+      customAttr: 'imageId',
+      src: '',
+      width: 100,
+      height: 100,
+    };
+
+    const columns = buildMasonryLayout<MyImage>([image], {
+      containerWidth: 100,
+    });
+
+    expect(getItemAt(columns[0] ?? [], 0).customAttr).toBe('imageId');
+  });
+
+  it('should create at least one column when container is narrower than target column width', () => {
+    const columns = buildMasonryLayout([image100x100], {
+      containerWidth: 50,
+      columnWidth: 180,
+      margin: 2,
+    });
+
+    expect(columns).toHaveLength(1);
+    expect(getItemAt(columns[0] ?? [], 0)).toEqual(
+      expect.objectContaining({
+        scaledWidth: 46,
+        scaledHeight: 46,
+        viewportWidth: 46,
+      }),
+    );
+  });
+
+  it('should not allocate more columns than images', () => {
+    const columns = buildMasonryLayout([image100x100], {
+      containerWidth: 1000,
+      columnWidth: 100,
+      margin: 0,
+    });
+
+    expect(columns).toHaveLength(1);
+    expect(getItemAt(columns[0] ?? [], 0)).toEqual(
+      expect.objectContaining({
+        scaledWidth: 100,
+        scaledHeight: 100,
+      }),
+    );
+  });
+
+  it('should clamp dimensions when margins exceed container width', () => {
+    const columns = buildMasonryLayout([image100x100], {
+      containerWidth: 3,
+      columnWidth: 180,
+      margin: 2,
+    });
+
+    expect(columns).toHaveLength(1);
+    expect(getItemAt(columns[0] ?? [], 0)).toEqual(
+      expect.objectContaining({
+        scaledWidth: 1,
+        scaledHeight: 1,
+        viewportWidth: 1,
+        marginLeft: 0,
+      }),
+    );
+  });
+
+  it('should preserve the helper width invariant', () => {
+    const options = { containerWidth: 474.7, columnWidth: 100, margin: 3 };
+
+    const columns = buildMasonryLayout(
+      [image100x100, image100x100, image100x100],
+      options,
+    );
+    const firstItem = getItemAt(columns[0] ?? [], 0);
+    const targetColumnCount = Math.floor(
+      options.containerWidth / (options.columnWidth + options.margin * 2),
+    );
+    const occupiedWidth =
+      targetColumnCount * (firstItem.scaledWidth + options.margin * 2);
+
+    expect(occupiedWidth).toBeLessThanOrEqual(options.containerWidth);
+  });
+
+  it('should preserve all images exactly once and attach original indices', () => {
+    const images = ['first', 'second', 'third', 'fourth'].map((src) => ({
+      ...image100x100,
+      src,
+    }));
+
+    const columns = buildMasonryLayout(images, {
+      containerWidth: 400,
+      columnWidth: 100,
+      margin: 0,
+    });
+    const items = flattenMasonryLayout(columns);
+
+    expect(items.map((item) => item.src).sort()).toEqual([
+      'first',
+      'fourth',
+      'second',
+      'third',
+    ]);
+    expect(
+      items.map((item) => item.originalIndex).sort((a, b) => a - b),
+    ).toEqual([0, 1, 2, 3]);
+  });
+
+  it('should place each next item into the shortest column', () => {
+    const images = [
+      { src: 'tall', width: 100, height: 300 },
+      { src: 'short', width: 100, height: 100 },
+      { src: 'next', width: 100, height: 100 },
+    ];
+
+    const columns = buildMasonryLayout(images, {
+      containerWidth: 200,
+      columnWidth: 100,
+      margin: 0,
+    });
+
+    expect(columns.map((column) => column.map((item) => item.src))).toEqual([
+      ['tall'],
+      ['short', 'next'],
+    ]);
+  });
+
+  it('should keep uniform column widths and preserve aspect ratios', () => {
+    const columns = buildMasonryLayout(
+      [
+        { src: 'landscape', width: 400, height: 200 },
+        { src: 'portrait', width: 200, height: 400 },
+      ],
+      { containerWidth: 400, columnWidth: 100, margin: 0 },
+    );
+    const items = flattenMasonryLayout(columns);
+
+    expect(items.every((item) => item.scaledWidth === 100)).toBe(true);
+    expect(items).toEqual([
+      expect.objectContaining({
+        src: 'landscape',
+        scaledHeight: 50,
+      }),
+      expect.objectContaining({
+        src: 'portrait',
+        scaledHeight: 200,
+      }),
+    ]);
+  });
+
+  it('should handle zero margin', () => {
+    const columns = buildMasonryLayout(
+      [image100x100, image100x100, image100x100],
+      { containerWidth: 300, columnWidth: 100, margin: 0 },
+    );
+
+    expect(columns).toHaveLength(3);
+    expect(
+      flattenMasonryLayout(columns).every((item) => item.scaledWidth === 100),
+    ).toBe(true);
+  });
+
+  it('should keep very wide and very tall images finite', () => {
+    const columns = buildMasonryLayout(
+      [
+        { src: 'wide', width: 6000, height: 1 },
+        { src: 'tall', width: 1, height: 6000 },
+      ],
+      { containerWidth: 200, columnWidth: 100, margin: 0 },
+    );
+
+    expect(
+      flattenMasonryLayout(columns).every((item) =>
+        [item.scaledWidth, item.scaledHeight, item.viewportWidth].every(
+          (value) => Number.isFinite(value) && value >= 0,
+        ),
+      ),
+    ).toBe(true);
+  });
+
+  it('should use a square fallback for invalid or tiny dimensions', () => {
+    const columns = buildMasonryLayout(
+      [
+        { src: 'zero-width', width: 0, height: 100 },
+        { src: 'tiny', width: 1000, height: 1 },
+      ],
+      { containerWidth: 100, columnWidth: 100, margin: 0 },
+    );
+
+    expect(flattenMasonryLayout(columns)).toEqual([
+      expect.objectContaining({
+        src: 'zero-width',
+        scaledWidth: 100,
+        scaledHeight: 100,
+      }),
+      expect.objectContaining({
+        src: 'tiny',
+        scaledWidth: 100,
+        scaledHeight: 100,
+      }),
+    ]);
+  });
+
+  it('should normalize invalid columnWidth and margin without invalid output', () => {
+    const columns = buildMasonryLayout(
+      [image100x100, image100x100, image100x100],
+      {
+        containerWidth: 960,
+        columnWidth: Number.NaN,
+        margin: Number.NaN,
+      },
+    );
+
+    expect(columns).toHaveLength(3);
+    expect(
+      flattenMasonryLayout(columns).every((item) =>
+        [item.scaledWidth, item.scaledHeight, item.viewportWidth].every(
+          (value) => Number.isFinite(value) && value >= 0,
+        ),
+      ),
+    ).toBe(true);
+  });
+
+  it('should not create unbounded columns for zero columnWidth and zero margin', () => {
+    const columns = buildMasonryLayout([image100x100], {
+      containerWidth: 960,
+      columnWidth: 0,
+      margin: 0,
+    });
+
+    expect(columns).toHaveLength(1);
+    expect(getItemAt(columns[0] ?? [], 0).scaledWidth).toBe(192);
+  });
+
+  it('should normalize negative margin without invalid output', () => {
+    const columns = buildMasonryLayout([image100x100], {
+      containerWidth: 200,
+      columnWidth: 100,
+      margin: -5,
+    });
+
+    const firstItem = getItemAt(columns[0] ?? [], 0);
+
+    expect(columns).toHaveLength(1);
+    expect(firstItem.scaledWidth).toBe(196);
+  });
+
+  it('should normalize sub-pixel columnWidth before calculating the column count', () => {
+    const columns = buildMasonryLayout([image100x100], {
+      containerWidth: 1000,
+      columnWidth: 0.5,
+      margin: 0,
+    });
+
+    expect(columns).toHaveLength(1);
+    expect(getItemAt(columns[0] ?? [], 0).scaledWidth).toBe(200);
   });
 });

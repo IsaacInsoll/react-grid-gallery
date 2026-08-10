@@ -1,7 +1,11 @@
 import type { MouseEvent, ReactElement } from 'react';
 import { Image } from './Image';
 import { useContainerWidth } from './useContainerWidth';
-import { buildLayoutFlat } from './buildLayout';
+import {
+  buildLayoutFlat,
+  buildMasonryLayout,
+  normalizeMasonryOptions,
+} from './buildLayout';
 import type {
   GalleryLayout,
   GalleryProps,
@@ -26,8 +30,10 @@ export const Gallery = <T extends ImageInterface>(
     id = 'ReactGridGallery',
     enableImageSelection = true,
     onSelect = () => {},
+    layout = 'justified',
     rowHeight = 180,
     maxRows,
+    columnWidth = 180,
     margin = 2,
     defaultContainerWidth = 0,
     onClick = () => {},
@@ -40,13 +46,7 @@ export const Gallery = <T extends ImageInterface>(
   const { containerRef, containerWidth } = useContainerWidth(
     defaultContainerWidth,
   );
-
-  const thumbnails = buildLayoutFlat<T>(images, {
-    containerWidth,
-    maxRows,
-    rowHeight,
-    margin,
-  });
+  const isMasonryLayout = layout === 'masonry';
 
   const handleSelect = (index: number, event: MouseEvent<HTMLElement>) => {
     event.preventDefault();
@@ -64,12 +64,58 @@ export const Gallery = <T extends ImageInterface>(
     onClick(index, item, event);
   };
 
+  if (isMasonryLayout) {
+    const masonryOptions = normalizeMasonryOptions({
+      containerWidth,
+      columnWidth,
+      margin,
+    });
+    const masonryColumns = buildMasonryLayout<T>(images, masonryOptions);
+
+    return (
+      <div id={id} className="ReactGridGallery" ref={containerRef}>
+        <div className="ReactGridGallery_masonry" style={styles.masonryGallery}>
+          {masonryColumns.map((column, columnIndex) => (
+            <div
+              key={columnIndex}
+              className="ReactGridGallery_masonry-column"
+              style={styles.masonryColumn}
+            >
+              {column.map((item) => (
+                <Image
+                  key={item.key ?? item.originalIndex}
+                  item={item}
+                  index={item.originalIndex}
+                  margin={masonryOptions.margin}
+                  isSelectable={enableImageSelection}
+                  onClick={handleClick}
+                  onSelect={handleSelect}
+                  tagStyle={tagStyle}
+                  tileViewportStyle={tileViewportStyle}
+                  thumbnailStyle={thumbnailStyle}
+                  thumbnailImageComponent={thumbnailImageComponent}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const thumbnails = buildLayoutFlat<T>(images, {
+    containerWidth,
+    maxRows,
+    rowHeight,
+    margin,
+  });
+
   return (
     <div id={id} className="ReactGridGallery" ref={containerRef}>
       <div style={styles.gallery}>
         {thumbnails.map((item, index) => (
           <Image
-            key={item.key || index}
+            key={item.key ?? index}
             item={item}
             index={index}
             margin={margin}

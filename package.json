@@ -1,7 +1,7 @@
 {
   "name": "@picr/react-grid-gallery",
   "version": "1.0.0",
-  "description": "Justified image gallery component for modern React applications.",
+  "description": "Responsive image gallery component with justified and masonry layouts for modern React applications.",
   "type": "module",
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
@@ -100,6 +100,7 @@
   "keywords": [
     "react-grid-gallery",
     "justified-gallery",
+    "masonry-gallery",
     "react-gallery",
     "image-grid",
     "photo-grid",
@@ -115,6 +116,7 @@
     "select",
     "selectable",
     "justified",
+    "masonry",
     "tags",
     "tagging",
     "EXIF",

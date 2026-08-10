@@ -82,6 +82,36 @@ const getGalleryProps = (): GalleryProps => {
       return {
         images: images.map((image) => ({ ...image, isSelected: true })),
       };
+    case 'masonry':
+      return { images, layout: 'masonry' };
+    case 'masonry-selected':
+      return {
+        images: images.map((image) => ({ ...image, isSelected: true })),
+        layout: 'masonry',
+      };
+    case 'masonry-selection':
+      return { images, layout: 'masonry', onSelect: handleSelect };
+    case 'masonry-caption':
+      return {
+        images: images.map((image, index) => ({
+          ...image,
+          thumbnailCaption: (
+            <span>
+              Caption line {index + 1}
+              <br />
+              Extra masonry caption text
+            </span>
+          ),
+        })),
+        layout: 'masonry',
+      };
+    case 'masonry-linked':
+      return { images: linkedImages, layout: 'masonry' };
+    case 'masonry-margin':
+      return { images, layout: 'masonry', margin: 10 };
+    case 'masonry-decimal-width':
+      rootElement.style.width = '474.7px';
+      return { images, layout: 'masonry' };
     case 'selection':
       return { images, onSelect: handleSelect };
     case 'transparent':
