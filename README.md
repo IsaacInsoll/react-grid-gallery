@@ -10,6 +10,16 @@ while providing modern packaging, TypeScript declarations, and maintained test
 coverage. The original author and contributors remain credited in
 [ACKNOWLEDGEMENTS.md](https://github.com/IsaacInsoll/react-grid-gallery/blob/main/ACKNOWLEDGEMENTS.md).
 
+**[Documentation and live interactive examples →](https://isaacinsoll.github.io/react-grid-gallery/)**
+
+<a href="https://isaacinsoll.github.io/react-grid-gallery/?path=/docs/examples-gallery-workshop--documentation">
+  <img
+    src="https://raw.githubusercontent.com/IsaacInsoll/react-grid-gallery/main/docs/assets/gallery-workshop.webp"
+    alt="The Gallery workshop showing justified rows, a segmented layout control, a thumbnail-size slider, and ten dog photographs"
+    width="900"
+  />
+</a>
+
 ## Compatibility
 
 |                    | `react-grid-gallery`                | `@picr/react-grid-gallery`                |
@@ -56,7 +66,9 @@ const images: Image[] = [
   },
 ];
 
-export const PhotoGallery = () => <Gallery images={images} />;
+export const PhotoGallery = () => (
+  <Gallery images={images} enableImageSelection={false} />
+);
 ```
 
 `src` is passed to a native `<img>` element, so local images work the same way
@@ -74,24 +86,27 @@ Choose a layout with the `layout` prop:
 ```
 
 The gallery fills the width of its containing element. Give that container a
-width before rendering the gallery. Supply `defaultContainerWidth` when server
+width before rendering the gallery. Image `width` and `height` values describe
+intrinsic aspect ratios, so the ratio must be accurate even when the delivered
+file has different pixel dimensions. Supply `defaultContainerWidth` when server
 rendering requires deterministic initial markup. Control rendered thumbnail
 sizing with layout props such as `rowHeight`, `columnWidth`, and `margin`, or
 with a custom thumbnail component.
 
 ## Documentation
 
+- [Live Storybook demos and developer guides](https://isaacinsoll.github.io/react-grid-gallery/)
 - [API reference](https://github.com/IsaacInsoll/react-grid-gallery/blob/main/docs/API.md)
 - [Migration from `react-grid-gallery`](https://github.com/IsaacInsoll/react-grid-gallery/blob/main/docs/MIGRATION.md)
-- [Original contributors and image credits](https://github.com/IsaacInsoll/react-grid-gallery/blob/main/ACKNOWLEDGEMENTS.md)
-- [Original upstream demos](https://benhowell.github.io/react-grid-gallery/)
-  (these use the original package; a maintained Storybook site is tracked
-  separately)
+- [Acknowledgements](https://github.com/IsaacInsoll/react-grid-gallery/blob/main/ACKNOWLEDGEMENTS.md)
+  (historical examples that use the original package)
 
 ## Project
 
 Contributions are welcome; see
-[CONTRIBUTING.md](https://github.com/IsaacInsoll/react-grid-gallery/blob/main/CONTRIBUTING.md).
+[CONTRIBUTING.md](https://github.com/IsaacInsoll/react-grid-gallery/blob/main/CONTRIBUTING.md)
+and the high-level
+[testing guide](https://github.com/IsaacInsoll/react-grid-gallery/blob/main/docs/TESTING.md).
 Report security issues privately as described in
 [SECURITY.md](https://github.com/IsaacInsoll/react-grid-gallery/blob/main/SECURITY.md),
 and use
@@ -99,7 +114,9 @@ and use
 ordinary bugs and feature requests.
 
 The fork remains MIT licensed and preserves Ben Howell's original authorship.
-Isaac Insoll maintains this scoped continuation. A courtesy request was posted
-to the original maintainer in
-[upstream issue #375](https://github.com/benhowell/react-grid-gallery/issues/375#issuecomment-5111298046);
-this project does not claim endorsement or a transfer of the original package.
+Isaac Insoll maintains this scoped continuation. After the courtesy request in
+[upstream issue #375](https://github.com/benhowell/react-grid-gallery/issues/375#issuecomment-5111298046),
+Ben Howell
+[welcomed the fork](https://github.com/benhowell/react-grid-gallery/issues/375#issuecomment-5113695157)
+and [invited a link to it](https://github.com/benhowell/react-grid-gallery/issues/375#issuecomment-5113879264).
+This does not transfer the original package or imply ongoing endorsement.

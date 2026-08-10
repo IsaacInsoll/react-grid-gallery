@@ -10,7 +10,10 @@ links.
 ### Features
 
 - Add `layout="masonry"` for column-based gallery rendering with target
-  `columnWidth` sizing.
+  `columnWidth` sizing. The reusable layout direction developed by
+  [Olli-Pekka Niskanen](https://github.com/opniskanen) in
+  [PICR PR #82](https://github.com/IsaacInsoll/PICR/pull/82) informed this
+  library-only API.
 - Add `buildMasonryLayout` and masonry layout item types for consumers that use
   the package layout helpers directly.
 
@@ -68,9 +71,12 @@ line and is not a downgrade from the original package's `1.0.1` release.
   npm 2FA approval, and npm provenance.
 - Preserve the MIT license, Ben Howell's original authorship, the complete
   inherited Git history, and individual contributor credit. See
-  [ACKNOWLEDGEMENTS.md](./ACKNOWLEDGEMENTS.md) for details.
-- See [docs/MIGRATION.md](./docs/MIGRATION.md) for package-name, ESM, runtime,
-  type, linked-tile, and justified-row migration details.
+  [ACKNOWLEDGEMENTS.md](https://github.com/IsaacInsoll/react-grid-gallery/blob/main/ACKNOWLEDGEMENTS.md)
+  for details.
+- See
+  [docs/MIGRATION.md](https://github.com/IsaacInsoll/react-grid-gallery/blob/main/docs/MIGRATION.md)
+  for package-name, ESM, runtime, type, linked-tile, and justified-row migration
+  details.
 
 ## v1.0.0-rc.0 / 2026-08-05
 
@@ -113,9 +119,12 @@ line and is not a downgrade from the original package's `1.0.1` release.
   subsequent releases use stage-only OIDC publishing with npm 2FA approval.
 - Preserve the MIT license, Ben Howell's original authorship, the complete
   inherited Git history, and individual contributor credit. See
-  [ACKNOWLEDGEMENTS.md](./ACKNOWLEDGEMENTS.md) for details.
-- See [docs/MIGRATION.md](./docs/MIGRATION.md) for package-name, ESM, runtime,
-  type, linked-tile, and justified-row migration details.
+  [ACKNOWLEDGEMENTS.md](https://github.com/IsaacInsoll/react-grid-gallery/blob/main/ACKNOWLEDGEMENTS.md)
+  for details.
+- See
+  [docs/MIGRATION.md](https://github.com/IsaacInsoll/react-grid-gallery/blob/main/docs/MIGRATION.md)
+  for package-name, ESM, runtime, type, linked-tile, and justified-row migration
+  details.
 
 ## Inherited `react-grid-gallery` History
 

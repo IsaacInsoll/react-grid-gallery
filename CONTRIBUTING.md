@@ -49,9 +49,51 @@ together.
 Vite builds the maintained browser fixture that feeds zero-tolerance visual
 baselines, and Vitest may resolve its own Vite dependency. Review and update
 those packages together, then synchronize the packed consumer's Vite version so
-it remains representative of the supported toolchain. Playwright Test must
-match the digest-pinned container and its browser binaries. Update either set
-manually and review any affected browser snapshots.
+it remains representative of the supported toolchain. Storybook's React-Vite
+framework is the fourth participant in this coordinated Vite axis. Update its
+exact-pinned packages as one group and verify their Vite peer range before
+changing Vite. Playwright Test must match the digest-pinned container and its
+browser binaries. Update either set manually and review any affected browser
+snapshots.
+
+Storybook dependencies and the example-only YARL integration are grouped
+separately by Dependabot because they ship frequently and belong to the same
+documentation surface. They remain subject to the seven-day intake gate and the
+same moderate-or-higher pull-request dependency review as other development
+dependencies. Investigate and update the coordinated group—or wait for an
+upstream fix—rather than suppressing that gate.
+
+## Storybook
+
+Run the developer site from the repository root:
+
+```sh
+npm run storybook
+```
+
+The development server resolves `@picr/react-grid-gallery` to `src/index.ts` for
+fast HMR. The static build resolves the same package-root import to
+`dist/index.js`, matching the published runtime boundary:
+
+```sh
+npm run build-storybook
+```
+
+For final local review, build and serve that production output on
+`http://127.0.0.1:6007`:
+
+```sh
+npm run storybook:preview
+```
+
+Use the development server for fast authoring and the static preview for final
+review. The latter is the same built-package boundary used by Pages and the
+Storybook browser tests.
+
+Keep stories deterministic and self-contained: no remote runtime images, fonts,
+scripts, or analytics. Use the accessibility panel as an authoring aid, while
+tracking behavior or markup changes in the dedicated accessibility work. The
+static build is checked by required CI and the Storybook Playwright project.
 
 `release-it` is part of the publishing authority rather than an ordinary
 development dependency. Update it manually after the release-flow dry run and
@@ -65,8 +107,11 @@ coordination process.
 
 ## Checks
 
-Run the checks relevant to your change. Before requesting review, the complete
-non-browser suite should pass:
+Use
+[Testing And Checks](https://github.com/IsaacInsoll/react-grid-gallery/blob/main/docs/TESTING.md)
+to choose fast feedback while editing and understand which boundary each
+command protects. Before requesting review, the complete non-browser suite
+should pass:
 
 ```sh
 npm run format:check
@@ -76,6 +121,7 @@ npm run test:types
 npm test
 npm run test:consumer
 npm run package:check
+npm run build-storybook
 ```
 
 Run browser tests in their pinned container:
@@ -103,7 +149,9 @@ dependencies.
 
 Report suspected vulnerabilities privately through
 [GitHub Security Advisories](https://github.com/IsaacInsoll/react-grid-gallery/security/advisories/new),
-not a public issue. See [SECURITY.md](SECURITY.md).
+not a public issue. See
+[SECURITY.md](https://github.com/IsaacInsoll/react-grid-gallery/blob/main/SECURITY.md).
 
 Only the maintainer releases this package. See
-[docs/RELEASING.md](docs/RELEASING.md) for the publishing controls and process.
+[docs/RELEASING.md](https://github.com/IsaacInsoll/react-grid-gallery/blob/main/docs/RELEASING.md)
+for the publishing controls and process.

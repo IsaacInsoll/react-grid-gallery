@@ -1,9 +1,9 @@
 # Release Process
 
-> [`1.0.0-rc.0`](https://www.npmjs.com/package/@picr/react-grid-gallery/v/1.0.0-rc.0)
-> established the package on npm with provenance on 2026-08-05. Its one-use
-> bootstrap credential was removed, and the permanent workflow is stage-only.
-> Progress toward the stable release is tracked in `MODERNIZATION_PLAN.md`.
+> [`1.0.0`](https://www.npmjs.com/package/@picr/react-grid-gallery/v/1.0.0)
+> was staged through OIDC, approved with npm 2FA, and published with provenance
+> on 2026-08-07. The earlier `1.0.0-rc.0` bootstrap credential was removed, and
+> the permanent workflow remains stage-only.
 
 `@picr/react-grid-gallery` is published only by the maintainer through GitHub
 Actions. Do not run `npm publish` from a development machine or add a long-lived
@@ -31,8 +31,11 @@ another release.
   approved emergency token path must set `NODE_AUTH_TOKEN` only on its publish
   step; `actions/setup-node` v7 no longer supplies a dummy value.
 - Workflow actions must use full commit SHAs and least-privilege permissions.
-- Only the publishing job may receive `id-token: write`; release operations may
-  receive `contents: write` only when required.
+- Within the release workflow, only the publishing job may receive
+  `id-token: write`; release operations may receive `contents: write` only when
+  required. The separate Storybook Pages deployment job has its own explicitly
+  scoped `pages: write` and `id-token: write` trust domain; its build job remains
+  read-only.
 - The packed artifact must pass the complete release gates and be reviewed
   before publishing.
 - Validation preserves one checked tarball as a short-lived workflow artifact.
@@ -51,22 +54,22 @@ The `1.0.0-rc.0` bootstrap therefore used a temporary granular token from the
 GitHub Actions workflow and published with provenance and the explicit `next`
 tag.
 
-npm also assigned `latest` during this first package registration despite the
+npm also assigned `latest` during the first package registration despite the
 explicit prerelease tag. The release workflow correctly stopped before the
 GitHub announcement because its stricter assertion expected `latest` to be
 absent. The maintainer accepted this one-time bootstrap state because the
-package had not been announced and stable `1.0.0` will explicitly replace
-`latest`; it is not the policy for later prereleases. The GitHub prerelease was
-then created manually from the same checked changelog notes.
+package had not been announced; stable `1.0.0` replaced `latest` on 2026-08-07.
+This is not the policy for later prereleases. The GitHub prerelease was then
+created manually from the same checked changelog notes.
 
 The `npm-publish` GitHub environment is restricted to tags matching `v*` and has
 no required reviewers. Its one-use `NPM_BOOTSTRAP_TOKEN` secret was removed
 after publication and must not be restored for normal releases.
 
 Stage-only npm trusted publishing is configured for the permanent workflow and
-the release-tag-restricted `npm-publish` GitHub environment. The first OIDC
-stage will verify the binding before `1.0.0` is approved. The prerelease's
-repository-linked provenance has already been verified.
+the release-tag-restricted `npm-publish` GitHub environment. Stable `1.0.0`
+successfully verified that binding, and npm exposes repository-linked
+provenance for both the prerelease and stable versions.
 
 Use these npm trusted-publisher values:
 
@@ -76,9 +79,9 @@ Use these npm trusted-publisher values:
 - Environment: `npm-publish`
 - Allowed action: `npm stage publish` only
 
-Once OIDC staging works, set package publishing access to require 2FA and
-disallow tokens. npm trusted publishing continues to work because it uses
-short-lived OIDC credentials rather than traditional automation tokens.
+Set and keep package publishing access configured to require 2FA and disallow
+tokens. npm trusted publishing continues to work because it uses short-lived
+OIDC credentials rather than traditional automation tokens.
 
 The bootstrap token was read only by the `1.0.0-rc.0` publish step. Both the
 GitHub environment secret and the corresponding granular npm token have been
@@ -136,14 +139,18 @@ Prereleases move `next` and leave `latest` on the newest stable release. After
 approving a stable version, move `next` to that same version before finalizing:
 
 ```sh
-npm dist-tag add @picr/react-grid-gallery@1.0.0 next
+release_version=1.2.0
+npm dist-tag add "@picr/react-grid-gallery@$release_version" next
 ```
 
-Substitute the stable version being released. This keeps `next` available at all
-times: it identifies the newest release candidate when one is ahead of stable,
-and otherwise matches `latest`. Stable finalization verifies both tags;
-prerelease finalization verifies `next` and rejects a prerelease that has moved
-`latest`.
+Substitute the actual stable version being released. This keeps `next`
+available at all times: it identifies the newest release candidate when one is
+ahead of stable, and otherwise matches `latest`. Stable finalization verifies
+both tags; prerelease finalization verifies `next` and rejects a prerelease that
+has moved `latest`. The finalization workflow intentionally cannot change npm
+distribution tags: its tokenless OIDC publisher is stage-only and its
+announcement job has no npm publishing credential, so moving `next` remains an
+explicit maintainer step.
 
 ## Emergency Recovery
 
@@ -172,3 +179,13 @@ urgent security release cannot wait for that repair:
 
 Never bypass the workflow with a local publish or retain the recovery token for
 the next release.
+
+### `1.0.0` incident record
+
+The initial `v1.0.0` push at 2026-08-06 22:20 UTC landed during a critical
+GitHub Actions incident. GitHub reported that webhook triggers were throttled,
+some push events did not start workflows, and those lost events could not be
+replayed automatically. After the incident resolved, recreating only the tag
+reference against the unchanged annotated tag object triggered the successful
+release run. No repository workflow, release-it configuration, npm trusted
+publisher binding, or package script defect caused the missing run.

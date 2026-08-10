@@ -45,11 +45,22 @@ and `margin`, or with a custom thumbnail component. Changing `Image.width` and
 `Image.height` changes the aspect ratio supplied to the layout calculation; it
 is not the supported way to request larger or smaller thumbnails.
 
+`id` is applied to the gallery root element. Give each instance a unique value
+when multiple galleries share a document; otherwise they all use the historical
+`ReactGridGallery` default.
+
 The package does not bundle a `ResizeObserver` polyfill. Without a native
 implementation, the gallery still measures its container once on mount but does
 not react to later container resizes. Install a global polyfill when resize
 responsiveness is required in an environment that lacks it; jsdom-based unit
 tests generally do not need one.
+
+A gallery mounted inside a hidden tab, modal, or accordion may initially report
+zero width and therefore render no tiles. Once the panel becomes measurable,
+`ResizeObserver` triggers the layout automatically. The revealed container must
+still have a real width; in flex or grid layouts, a fluid gallery child commonly
+needs `min-width: 0`. Do not use `defaultContainerWidth` as a substitute for
+client-side container CSS.
 
 `rowHeight` is a target rather than a guaranteed height. A row that overflows
 the container at that height is proportionally rescaled so every image remains
@@ -72,6 +83,10 @@ even because its height cannot be known by the layout helper.
 
 ### Selection
 
+Selection is controlled by the `isSelected` field on each image. `Gallery`
+never mutates that field: `onSelect` reports the interaction and the consumer
+supplies the next `images` array.
+
 ```tsx
 interface Photo extends Image {
   id: string;
@@ -89,6 +104,11 @@ const handleSelect: EventHandler<Photo> = (index, image) => {
 
 <Gallery images={images} onSelect={handleSelect} />;
 ```
+
+`onSelect` only runs while `enableImageSelection` is `true`. Setting it to
+`false` hides the selection controls but preserves the appearance of records
+whose `isSelected` value is already true. This supports display-only and locked
+review states.
 
 ### Custom Thumbnail
 
@@ -128,7 +148,22 @@ be spread into the native element.
 | `href`             | `string`           | Makes the tile viewport a native link      |
 
 `ImageTag` has a required `value: ReactNode`, required `title: string`, and an
-optional `key: string | number`.
+optional `key: string | number`. The value may be interactive content, such as
+a linked album chip:
+
+```tsx
+tags: [
+  {
+    key: 'album',
+    title: 'Open the portrait album',
+    value: <a href="/albums/portraits">Portraits</a>,
+  },
+];
+```
+
+`nano` stays visible behind the foreground `<img>` until that image paints. It
+is normally a very small Base64 or SVG data URL. The placeholder affects only
+the loading presentation; `width` and `height` still determine the row layout.
 
 When `caption` is a string, it also becomes the thumbnail image's native
 `title` attribute.
@@ -141,6 +176,9 @@ your bundler and pass the imported URL.
 `width` and `height` describe the source image's intrinsic dimensions so the
 gallery can preserve aspect ratio while calculating rows or masonry columns.
 They are not display-size props.
+
+`orientation` accepts the standard EXIF orientation values. Values `2` through
+`8` mirror or rotate the thumbnail; omit it (or use `1`) for normal orientation.
 
 ### Linked Tiles
 
@@ -241,11 +279,45 @@ your router after preventing the browser navigation:
 `CSSProperties` object or a function. The function receives the extended image,
 including custom application fields.
 
+The supplied style replaces that element's internal style; it is not shallowly
+merged with the default. For `thumbnailStyle` and `tileViewportStyle`, include
+the calculated dimensions from `item` or merge `imageProps.style` inside a
+custom thumbnail component. Omitting layout-critical properties such as
+`width`, `height`, and `overflow` can change the gallery geometry.
+
 ```tsx
 <Gallery
   images={images}
-  thumbnailStyle={({ item }) => ({ opacity: item.isSelected ? 1 : 0.8 })}
+  thumbnailStyle={({ item }) => ({
+    cursor: 'pointer',
+    maxWidth: 'none',
+    width: item.scaledWidth,
+    height: item.scaledHeight,
+    marginLeft: item.marginLeft,
+    marginTop: 0,
+    opacity: item.isSelected ? 1 : 0.8,
+  })}
 />
+```
+
+The example above is appropriate when its records do not use selection sizing
+or EXIF orientation. A custom thumbnail is safer when you need to preserve all
+of Gallery's calculated image treatment while adding a small visual change:
+
+```tsx
+const Thumbnail = ({
+  imageProps,
+  item,
+}: ThumbnailImageProps<ImageExtended<MyImage>>) => (
+  <img
+    {...imageProps}
+    title={imageProps.title ?? undefined}
+    style={{
+      ...imageProps.style,
+      opacity: item.status === 'processing' ? 0.5 : 1,
+    }}
+  />
+);
 ```
 
 Related exported types are `StyleProp<T>`, `StyleFunction<T>`, and

@@ -25,6 +25,11 @@ The underlying `test:browser` and `test:browser:update` scripts are container
 internals. Running them directly requires a matching Playwright browser and can
 produce host-specific screenshots.
 
+The `storybook-static` project serves the production Storybook build on port 4175. Storybook's production Vite configuration resolves package-root imports to
+`dist/index.js`, so these scenarios also exercise the built artifact while
+covering the maintained documentation experience. Its screenshots share this
+suite's pinned container and zero-tolerance comparison settings.
+
 ## Baseline Provenance
 
 The migration originally seeded 17 Playwright screenshots from the inherited

@@ -11,4 +11,5 @@ lib/
 playwright-report
 test-results
 coverage
+storybook-static
 .type-package/

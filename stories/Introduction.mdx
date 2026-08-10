@@ -1,0 +1,38 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as WorkshopStories from './GalleryWorkshop.stories';
+import { ProjectLinks } from './ProjectLinks';
+
+<Meta title="Start/Welcome" />
+
+<div className="docs-hero">
+  <p className="docs-hero__label">@picr/react-grid-gallery</p>
+  <h1>A gallery that makes the geometry disappear.</h1>
+  <div className="docs-hero__summary">
+    A maintained, ESM-first justified and masonry gallery for React 18 and
+    19—small at runtime, strongly typed, and tested through the package
+    consumers actually install.
+  </div>
+</div>
+
+<Canvas of={WorkshopStories.ExploreTheGallery} />
+
+<ProjectLinks />
+
+## Where next?
+
+- **New project:** open [Getting started](?path=/docs/start-getting-started--documentation)
+  for the small typed version of the live workshop above.
+- **Existing `react-grid-gallery` project:** read
+  [Migration](?path=/docs/guides-migration--documentation) before changing the
+  import.
+- **Building a product:** try
+  [Photo manager](?path=/docs/examples-photo-manager--documentation) and
+  [Mixed destinations](?path=/docs/examples-mixed-destinations--documentation),
+  then use [Recipes](?path=/docs/guides-recipes--documentation) and the
+  [API reference](?path=/docs/guides-api-reference--documentation) for the
+  underlying patterns.
+
+The product examples use Isaac Insoll's repository-owned dog photographs, with
+optimized local thumbnails and original-resolution local viewer files. Focused
+API examples use deterministic SVG artwork. The site has no runtime dependency
+on remote images, fonts, scripts, analytics, or video players.

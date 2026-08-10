@@ -3,6 +3,11 @@
 The fork preserves the original component API for supported modern React
 projects. Most applications only need to change the package and import name.
 
+If you already use upstream `1.x`, start with the install and import change
+below, then review the environment, row-sizing, and linked-tile sections for the
+few intentional differences. Applications on `0.5.x` should also follow the
+historical upgrade guidance at the end of this page.
+
 ```sh
 npm uninstall react-grid-gallery
 npm install @picr/react-grid-gallery
@@ -15,15 +20,23 @@ npm install @picr/react-grid-gallery
 
 ## Environment Changes
 
-- React 18 and 19 are supported. React 16 and 17 remain supported by the
-  original package instead.
-- The package is ESM-only and targets ES2020 browsers. CommonJS `require`, UMD
-  script tags, and Internet Explorer are not supported.
-- Node.js 22 or newer is the declared package baseline.
-- TypeScript 5.5 is the minimum tested consumer compiler. Declarations are also
-  tested with the development TypeScript 6 compiler and current TypeScript 7.
-- Only package-root imports are supported. `src` is no longer published and
-  deep imports into `src` or `dist` are not API contracts.
+For applications already using a modern ESM React toolchain from late 2024
+onward—React 18+, Node.js 22+, and TypeScript 5.5+ when applicable—the fork will
+usually be a package-name change rather than an environment migration.
+
+| Area           | `react-grid-gallery`                                             | `@picr/react-grid-gallery`                       |
+| -------------- | ---------------------------------------------------------------- | ------------------------------------------------ |
+| React          | React 16.14 or newer                                             | React 18 or 19                                   |
+| Module formats | CommonJS, ESM, and UMD                                           | ESM only                                         |
+| Browser output | Legacy ES5/UMD build available                                   | ES2020 ESM for modern browsers                   |
+| Node.js        | No declared package minimum                                      | Node.js 22 or newer                              |
+| TypeScript     | Declarations included                                            | TypeScript 5.5 minimum; also tested with 6 and 7 |
+| Imports        | Historical source and distribution paths may have been reachable | Package-root imports only                        |
+
+Applications that still require React 16/17, CommonJS `require`, UMD script
+tags, Internet Explorer, or other legacy browser output should remain on the
+original package. The maintained package does not publish `src`; deep imports
+into `src` or `dist` are not supported API contracts.
 
 ## Type Corrections
 
@@ -106,4 +119,13 @@ project's
 [`0.5.x` to `1.x` guide](https://github.com/benhowell/react-grid-gallery/blob/master/UPGRADE_GUIDE.md),
 which covers the earlier lightbox removal and prop renames. The
 [original demos](https://benhowell.github.io/react-grid-gallery/) also remain
-available as historical examples, but install and import the original package.
+available as historical references. Their interaction patterns still apply,
+but their code installs and imports the original package; use this maintained
+Storybook for current package examples.
+
+The historical Nextra documentation demonstrated both `react-image-lightbox`
+and Yet Another React Lightbox. Neither viewer is bundled with this package.
+`react-image-lightbox` is no longer the maintained recommendation: keep your
+selected index in application state and use the working YARL example in
+**Storybook / Advanced / Viewer integration**, or apply the same provider-neutral
+`onClick` pattern to another current viewer.

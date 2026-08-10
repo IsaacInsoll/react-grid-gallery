@@ -8,4 +8,5 @@ coverage
 *.bundle.js
 package-lock.json
 test/browser/__screenshots__
+storybook-static
 .type-package/

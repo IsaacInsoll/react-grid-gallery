@@ -35,6 +35,11 @@ export default defineConfig({
       testMatch: /react-19\.smoke\.spec\.ts/,
       use: { baseURL: 'http://127.0.0.1:4174' },
     },
+    {
+      name: 'storybook-static',
+      testMatch: /storybook\.spec\.ts/,
+      use: { baseURL: 'http://127.0.0.1:4175' },
+    },
   ],
   webServer: [
     {
@@ -47,6 +52,12 @@ export default defineConfig({
       command:
         'vite --config test/fixtures/gallery/vite.config.ts --mode react19 --host 0.0.0.0 --port 4174',
       port: 4174,
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command:
+        'vite preview --outDir storybook-static --host 0.0.0.0 --port 4175',
+      port: 4175,
       reuseExistingServer: !process.env.CI,
     },
   ],
