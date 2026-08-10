@@ -10,10 +10,22 @@ updates:
       semver-major-days: 30
       semver-minor-days: 7
     groups:
+      storybook:
+        applies-to: version-updates
+        patterns:
+          - 'storybook'
+          - '@storybook/*'
+          - 'eslint-plugin-storybook'
+          - 'yet-another-react-lightbox'
       npm-dependencies:
         applies-to: version-updates
         patterns:
           - '*'
+        exclude-patterns:
+          - 'storybook'
+          - '@storybook/*'
+          - 'eslint-plugin-storybook'
+          - 'yet-another-react-lightbox'
     # These exact versions define coordinated compatibility axes or sensitive
     # release tooling rather than ordinary "latest" dependencies. update-types
     # ignores routine updates only; Dependabot security updates remain eligible.

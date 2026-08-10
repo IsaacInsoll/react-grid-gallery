@@ -4,10 +4,13 @@
     "noEmit": true,
     "rootDir": ".",
     "paths": {
-      "@gallery": ["./src/index.ts"]
+      "@gallery": ["./src/index.ts"],
+      "@picr/react-grid-gallery": ["./src/index.ts"]
     }
   },
   "include": [
+    ".storybook/**/*",
+    "stories/**/*",
     "test/**/*",
     "playwright.config.ts",
     "tsdown.config.ts",

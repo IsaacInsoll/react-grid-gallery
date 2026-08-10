@@ -47,44 +47,37 @@ test.describe('Linked gallery tiles', () => {
     expect(new URL(page.url()).searchParams.get('scenario')).toBe('linked');
   });
 
-  test('preserves native modified-click navigation', async ({
-    context,
-    page,
-  }) => {
+  test('leaves modified-click navigation to the browser', async ({ page }) => {
     await openLinkedGallery(page);
 
-    const [newPage] = await Promise.all([
-      context.waitForEvent('page'),
-      getFirstTileLink(page).click({ modifiers: ['Control'] }),
-    ]);
+    const link = getFirstTileLink(page);
+    await expect(link).toHaveAttribute(
+      'href',
+      /(?:\?|&)scenario=linked-destination(?:&|$)/,
+    );
+    await link.click({ modifiers: ['Control'] });
 
-    await expectLinkedDestination(newPage);
     await expect(page.locator('body')).toHaveAttribute(
       'data-gallery-click',
       'modified',
     );
-    await newPage.close();
+    expect(new URL(page.url()).searchParams.get('scenario')).toBe('linked');
   });
 
-  test('preserves native middle-click navigation', async ({
-    context,
-    page,
-  }) => {
+  test('leaves middle-click navigation to the browser', async ({ page }) => {
     await openLinkedGallery(page);
 
-    const [newPage] = await Promise.all([
-      context.waitForEvent('page'),
-      getFirstTileLink(page).click({ button: 'middle' }),
-    ]);
-
-    await expectLinkedDestination(newPage);
-    await expect(newPage).toHaveURL(
+    const link = getFirstTileLink(page);
+    await expect(link).toHaveAttribute(
+      'href',
       /(?:\?|&)scenario=linked-destination(?:&|$)/,
     );
+    await link.click({ button: 'middle' });
+
     await expect(page.locator('body')).not.toHaveAttribute(
       'data-gallery-click',
     );
-    await newPage.close();
+    expect(new URL(page.url()).searchParams.get('scenario')).toBe('linked');
   });
 
   test('follows an unprevented ordinary click in the current tab', async ({

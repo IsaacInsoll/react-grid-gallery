@@ -63,6 +63,9 @@ jobs:
       - name: Check package
         run: npm run package:check
 
+      - name: Build Storybook
+        run: npm run build-storybook
+
   compatibility:
     name: Node.js ${{ matrix.node-version }} compatibility
     runs-on: ubuntu-24.04

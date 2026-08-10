@@ -1,0 +1,14 @@
+import { Markdown, Meta } from '@storybook/addon-docs/blocks';
+import testing from '../docs/TESTING.md?raw';
+
+<Meta title="Contributors/Testing & checks" />
+
+<div className="contributor-audience-note">
+  <strong>Repository quality map</strong>
+  <span>
+    Each layer catches a different class of failure, from a fast source
+    regression to a broken packed artifact or browser screenshot.
+  </span>
+</div>
+
+<Markdown>{testing}</Markdown>

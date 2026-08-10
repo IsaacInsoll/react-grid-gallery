@@ -5,12 +5,18 @@ import { defineConfig } from 'eslint/config';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import playwright from 'eslint-plugin-playwright';
 import reactHooks from 'eslint-plugin-react-hooks';
+import storybook from 'eslint-plugin-storybook';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 const sourceFiles = ['src/**/*.{ts,tsx}'];
-const testFiles = ['test/**/*.{ts,tsx}', 'vitest.setup.ts'];
-const configFiles = ['*.config.ts'];
+const testFiles = [
+  'test/**/*.{ts,tsx}',
+  'stories/**/*.{ts,tsx}',
+  '.storybook/**/*.{ts,tsx}',
+  'vitest.setup.ts',
+];
+const configFiles = ['*.config.ts', '.storybook/main.ts'];
 const consumerTypeFiles = [
   'test/fixtures/packed-consumer/**/*.{ts,tsx}',
   'test/fixtures/types/consumer.tsx',
@@ -23,6 +29,7 @@ export default defineConfig(
       'coverage/**',
       'test-results/**',
       'test/browser/__screenshots__/**',
+      'storybook-static/**',
       '**/.type-package/**',
       '**/node_modules/**',
     ],
@@ -93,7 +100,12 @@ export default defineConfig(
     },
   },
   {
-    files: ['src/**/*.tsx', 'test/**/*.tsx'],
+    files: [
+      'src/**/*.tsx',
+      'test/**/*.tsx',
+      'stories/**/*.tsx',
+      '.storybook/**/*.tsx',
+    ],
     extends: [
       eslintReact.configs['recommended-typescript'],
       eslintReact.configs['disable-conflict-eslint-plugin-react-hooks'],
@@ -119,5 +131,6 @@ export default defineConfig(
     files: ['test/browser/**/*.spec.ts'],
     extends: [playwright.configs['flat/recommended']],
   },
+  ...storybook.configs['flat/recommended'],
   eslintConfigPrettier,
 );

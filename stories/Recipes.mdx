@@ -1,0 +1,321 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as ContentStories from './Content.stories';
+import * as HeadlessStories from './HeadlessLayout.stories';
+import * as IntegrationStories from './Integrations.stories';
+import * as LayoutStories from './LayoutEdgeCases.stories';
+import * as WorkshopStories from './GalleryWorkshop.stories';
+import * as MixedStories from './MixedDestinations.stories';
+import * as SelectionStories from './Selection.stories';
+
+<Meta title="Guides/Recipes" />
+
+# Practical recipes
+
+These patterns complement the API reference. They focus on the bits applications
+usually need to decide themselves.
+
+## Choose justified rows or masonry columns
+
+Justified layout is the compatibility default. It fills responsive rows and
+uses `rowHeight` as a target. Masonry fills responsive columns and uses
+`columnWidth` as a target. Neither value promises an exact rendered dimension:
+Gallery fits the chosen geometry to its measured container.
+
+```tsx
+<Gallery images={photos} layout="justified" rowHeight={180} margin={3} />
+<Gallery images={photos} layout="masonry" columnWidth={180} margin={3} />
+```
+
+<Canvas of={WorkshopStories.ExploreTheGallery} />
+
+Use masonry when preserving independent image heights matters more than aligned
+rows. Use justified layout for the Google Photos-style continuous row rhythm.
+
+## Controlled selection with application fields
+
+`Gallery` is generic, so domain fields remain typed in callbacks.
+
+```tsx
+import { useState } from 'react';
+import { Gallery } from '@picr/react-grid-gallery';
+import type { EventHandler, Image } from '@picr/react-grid-gallery';
+
+interface Photo extends Image {
+  id: string;
+  albumId: string;
+}
+
+const [photos, setPhotos] = useState<Photo[]>(initialPhotos);
+
+const onSelect: EventHandler<Photo> = (index, photo) => {
+  setPhotos((current) =>
+    current.map((item, itemIndex) =>
+      itemIndex === index ? { ...item, isSelected: !photo.isSelected } : item,
+    ),
+  );
+};
+
+<Gallery images={photos} onSelect={onSelect} />;
+```
+
+<Canvas of={SelectionStories.ControlledSelection} />
+
+### Select all and clear selection
+
+Bulk actions update the same controlled field; they do not need a Gallery prop.
+
+```tsx
+const hasSelected = photos.some((photo) => photo.isSelected);
+
+const toggleAll = () => {
+  setPhotos((current) =>
+    current.map((photo) => ({
+      ...photo,
+      isSelected: !hasSelected,
+    })),
+  );
+};
+```
+
+When selection must remain visible but immutable, keep `isSelected` on the
+records and set `enableImageSelection={false}`. Gallery preserves the selected
+styling while hiding its controls and suppressing `onSelect`.
+
+### Shift-click a range
+
+`onSelect` receives the original React mouse event, so range selection remains
+ordinary controlled state. Keep the last selected record, find both endpoints
+in the currently visible collection, and update the inclusive slice when
+`event.shiftKey` is true.
+
+```tsx
+const lastSelectedId = useRef<string | undefined>(undefined);
+
+const onSelect: EventHandler<Photo> = (_index, photo, event) => {
+  const target = visiblePhotos.findIndex((item) => item.id === photo.id);
+  const anchor = visiblePhotos.findIndex(
+    (item) => item.id === lastSelectedId.current,
+  );
+  const selected = !photo.isSelected;
+  const range =
+    event.shiftKey && anchor >= 0
+      ? visiblePhotos.slice(
+          Math.min(anchor, target),
+          Math.max(anchor, target) + 1,
+        )
+      : [photo];
+  const rangeIds = new Set(range.map((item) => item.id));
+
+  setPhotos((current) =>
+    current.map((item) =>
+      rangeIds.has(item.id) ? { ...item, isSelected: selected } : item,
+    ),
+  );
+  lastSelectedId.current = photo.id;
+};
+```
+
+The live controlled-selection story implements this pattern. Filtering changes
+the visible range, while updates still use stable record IDs.
+
+## Server rendering without a layout jump
+
+The package can render on the server. If your layout knows the initial container
+width, pass it as `defaultContainerWidth`; `ResizeObserver` takes over after the
+component mounts.
+
+```tsx
+<Gallery
+  images={photos}
+  defaultContainerWidth={960}
+  enableImageSelection={false}
+/>
+```
+
+Use `0` or omit the prop when the server cannot know the width. The first useful
+layout then appears after the client measures the container.
+
+## Integrate Yet Another React Lightbox
+
+Install [Yet Another React Lightbox](https://yet-another-react-lightbox.com/),
+import its base styles once, and keep the selected index in application state.
+This is the same integration shape used by PICR, with product-specific viewer
+behavior omitted.
+
+```sh
+npm install yet-another-react-lightbox
+```
+
+```tsx
+import { useMemo, useState } from 'react';
+import { Gallery } from '@picr/react-grid-gallery';
+import Lightbox from 'yet-another-react-lightbox';
+import 'yet-another-react-lightbox/styles.css';
+
+const [viewerIndex, setViewerIndex] = useState(-1);
+const slides = useMemo(
+  () =>
+    photos.map(({ src, width, height, alt }) => ({
+      src,
+      width,
+      height,
+      alt,
+    })),
+  [photos],
+);
+
+<>
+  <Gallery
+    images={photos}
+    enableImageSelection={false}
+    onClick={(index) => {
+      setViewerIndex(index);
+    }}
+  />
+  <Lightbox
+    open={viewerIndex >= 0}
+    index={viewerIndex}
+    slides={slides}
+    close={() => {
+      setViewerIndex(-1);
+    }}
+    on={{
+      view: ({ index }) => {
+        setViewerIndex(index);
+      },
+    }}
+  />
+</>;
+```
+
+<Canvas of={IntegrationStories.FullResolutionLightbox} />
+
+The stable `slides` array avoids resetting YARL when this component re-renders.
+Gallery itself remains viewer-neutral: the same selected-index state can drive
+a different lightbox, a native dialog, or a route.
+
+If an image also has `href`, call `event.preventDefault()` when opening the
+viewer should replace navigation for an unmodified click.
+
+## Client-side routing without breaking native links
+
+Only intercept an unmodified primary click. This keeps new-tab and modified-click
+behavior native.
+
+```tsx
+<Gallery
+  images={photos}
+  onClick={(_index, photo, event) => {
+    if (
+      photo.href &&
+      !event.metaKey &&
+      !event.ctrlKey &&
+      !event.shiftKey &&
+      !event.altKey
+    ) {
+      event.preventDefault();
+      navigate(photo.href);
+    }
+  }}
+/>
+```
+
+<Canvas of={MixedStories.PhotosAlbumsAndVideo} />
+
+The mixed-destination example deliberately leaves the external video as a
+native link. It never embeds a remote player or requests third-party assets in
+Storybook.
+
+## A custom thumbnail that forwards the contract safely
+
+```tsx
+import type { ThumbnailImageProps } from '@picr/react-grid-gallery';
+
+const LazyThumbnail = ({ imageProps }: ThumbnailImageProps) => {
+  const { title, ...nativeImageProps } = imageProps;
+
+  return (
+    <img
+      {...nativeImageProps}
+      loading="lazy"
+      decoding="async"
+      title={title ?? undefined}
+    />
+  );
+};
+
+<Gallery images={photos} thumbnailImageComponent={LazyThumbnail} />;
+```
+
+React's special `key` is intentionally absent from `imageProps`. When a tile has
+an `href`, the custom thumbnail renders inside its anchor, so it must not add a
+nested button, anchor, or other interactive element.
+
+## Add progressive placeholders
+
+Put a small Base64 or other data URL in `nano`. Gallery paints it behind the
+foreground thumbnail, so the final image can load without changing the row
+geometry.
+
+```tsx
+const photos: Image[] = [
+  {
+    src: '/photos/coast.jpg',
+    nano: 'data:image/jpeg;base64,...',
+    width: 1600,
+    height: 1067,
+    alt: 'Sunset above a quiet coast',
+  },
+];
+```
+
+<Canvas of={ContentStories.ProgressivePlaceholders} />
+
+## Responsive layout in constrained UI
+
+Give the gallery's immediate container the width you want it to occupy. It can be
+a fixed column, a grid track, or a fluid pane; no viewport-specific prop is
+needed.
+
+```tsx
+<aside style={{ width: 360 }}>
+  <Gallery images={photos} rowHeight={140} margin={3} />
+</aside>
+```
+
+Use the viewport toolbar and
+[Gallery / Layout edge cases / Narrow container](?path=/docs/gallery-layout-edge-cases--documentation)
+to see container responsiveness independently from the browser width.
+
+## Preview a justified album, then show every row
+
+Use `maxRows` for the collapsed view and remove it when the application-owned
+button is activated. This prop applies to justified rows; masonry collections
+should limit or paginate their input array instead.
+
+<Canvas of={LayoutStories.MaxRowsPreview} />
+
+## Render more than one gallery
+
+`id` becomes the gallery root element's DOM id. Its default is
+`ReactGridGallery`; provide a unique value when multiple galleries share a page
+or when tests and analytics need a stable target.
+
+```tsx
+<Gallery id="recent-photos" images={recentPhotos} />
+<Gallery id="archived-photos" images={archivedPhotos} />
+```
+
+<Canvas of={LayoutStories.MultipleGalleries} />
+
+## Render custom tiles with the layout helpers
+
+`buildLayout` returns rows when row membership matters. `buildLayoutFlat`
+returns the same extended records as one list. Both preserve your custom image
+fields and add the calculated dimensions needed by a custom renderer.
+
+<Canvas of={HeadlessStories.CustomTiles} />
+
+Use `Gallery` unless you genuinely need different tile markup. With the helpers,
+your application becomes responsible for image elements, interaction semantics,
+captions, overlays, and resize measurement as well as presentation.

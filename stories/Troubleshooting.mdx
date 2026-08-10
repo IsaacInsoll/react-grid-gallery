@@ -1,0 +1,146 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as ContentStories from './Content.stories';
+import * as LayoutStories from './LayoutEdgeCases.stories';
+import * as SelectionStories from './Selection.stories';
+
+<Meta title="Guides/Troubleshooting" />
+
+# Troubleshooting by symptom
+
+Most Gallery surprises come from one of four boundaries: the container has no
+measurable width, image records describe the wrong aspect ratio, controlled
+state was not returned to Gallery, or a replacement style omitted required
+geometry. Start with the symptom below before reaching for a remount or timeout.
+
+## “The gallery is empty in a tab, modal, or accordion”
+
+Gallery measures its immediate container. A panel mounted with `display: none`
+initially measures `0px`, so there is no useful layout to render. Keep a native
+or polyfilled `ResizeObserver` available and ensure the revealed panel receives
+a real width; Gallery will render when that width becomes measurable.
+
+`defaultContainerWidth` is for deterministic server-rendered markup. It is not
+a CSS width and is normally unnecessary for a hidden client-side panel.
+
+<Canvas of={LayoutStories.HiddenThenRevealed} />
+
+In flex and grid layouts, the direct child often needs room to shrink:
+
+```tsx
+<main style={{ display: 'flex' }}>
+  <aside>{/* controls */}</aside>
+  <section style={{ flex: 1, minWidth: 0 }}>
+    <Gallery images={photos} />
+  </section>
+</main>
+```
+
+## “Changing width and height does not change thumbnail size”
+
+`Image.width` and `Image.height` are numeric **intrinsic dimensions**. Gallery
+uses their ratio for geometry; they are not rendered CSS dimensions and should
+not be set to `"auto"`. Use `rowHeight` for justified density or `columnWidth`
+for masonry density. Both values are targets because the container decides the
+final fit.
+
+If thumbnails look stretched, rotated, or unexpectedly cropped, first verify
+that the supplied ratio describes the file in `src` after any server-side crop
+or EXIF processing. Use `orientation` only when the delivered thumbnail still
+needs the corresponding EXIF transform.
+
+## “The selection callback fires, but the check does not stay selected”
+
+Selection is controlled. `onSelect` reports the interaction; your state update
+must return an array containing the next `isSelected` value.
+
+<Canvas of={SelectionStories.ControlledSelection} />
+
+Set `enableImageSelection={false}` only when selection controls and edits should
+be disabled. Existing `isSelected` styling remains visible in that mode.
+
+## “A custom style made the image disappear”
+
+`thumbnailStyle`, `tileViewportStyle`, and `tagStyle` **replace** their internal
+counterpart; they do not shallow-merge with it. A viewport replacement normally
+needs the calculated width, height, and overflow:
+
+```tsx
+<Gallery
+  images={photos}
+  tileViewportStyle={({ item }) => ({
+    width: item.viewportWidth,
+    height: item.scaledHeight,
+    overflow: 'hidden',
+    borderRadius: 12,
+    boxShadow: '0 8px 24px rgb(0 0 0 / 18%)',
+  })}
+/>
+```
+
+For a custom thumbnail component, preserve `imageProps.style` on the outer
+geometry-owning element or merge it into your `<img>`.
+
+## “I need fixed columns, square tiles, or exactly N images per row”
+
+- Justified layout preserves aspect ratios while filling responsive rows.
+- Masonry layout preserves aspect ratios in responsive columns;
+  `columnWidth` is a target, not an exact column-count promise.
+- A square crop is different from both algorithms. Use a custom thumbnail that
+  deliberately applies `object-fit: cover`, or use the headless layout helpers
+  when your product requires completely different tile geometry.
+
+## “How do I load hundreds of images?”
+
+Gallery does not fetch, paginate, or virtualize your collection. Keep those
+policies in application state and pass the currently available records. A
+custom thumbnail can add native `loading="lazy"`; `nano` can make each pending
+thumbnail feel stable.
+
+<Canvas of={ContentStories.IncrementalLoading} />
+
+For very large collections, pair incremental data with product-appropriate
+pagination or virtualization rather than rendering every record merely because
+the array is available.
+
+## “Why does an empty image array render nothing?”
+
+That is the intended empty state. Gallery owns image layout rather than product
+loading, permission, search, or empty-collection UI. Render the message and
+actions that make sense for your application:
+
+```tsx
+return photos.length > 0 ? (
+  <Gallery images={photos} enableImageSelection={false} />
+) : (
+  <EmptyAlbum onUpload={openUploader} />
+);
+```
+
+The [Photo manager](?path=/docs/examples-photo-manager--documentation) shows the
+same boundary after a search or filter returns no photographs.
+
+## “Can it use local images, links, videos, or a lightbox?”
+
+- Local images use ordinary browser URLs: import an asset through your bundler,
+  or pass a public/static path.
+- Add `href` for a native linked tile.
+- Use `onClick` and application state for YARL or another viewer.
+- A video can be a linked/custom-overlaid record, but Gallery itself renders an
+  image thumbnail and does not own a video player.
+
+## Why these answers are here
+
+This guide distills recurring questions from the original project's 158-issue
+history, especially hidden/container sizing
+([#37](https://github.com/benhowell/react-grid-gallery/issues/37),
+[#226](https://github.com/benhowell/react-grid-gallery/issues/226),
+[#277](https://github.com/benhowell/react-grid-gallery/issues/277), and
+[#366](https://github.com/benhowell/react-grid-gallery/issues/366)), intrinsic
+dimensions ([#24](https://github.com/benhowell/react-grid-gallery/issues/24),
+[#62](https://github.com/benhowell/react-grid-gallery/issues/62), and
+[#144](https://github.com/benhowell/react-grid-gallery/issues/144)), controlled
+selection ([#16](https://github.com/benhowell/react-grid-gallery/issues/16)),
+replacement styles
+([#258](https://github.com/benhowell/react-grid-gallery/issues/258)), and
+consumer-owned loading
+([#82](https://github.com/benhowell/react-grid-gallery/issues/82)).

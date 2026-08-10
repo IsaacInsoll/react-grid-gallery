@@ -16,6 +16,19 @@ later fixes were developed and validated before being contributed here.
   The [original commit](https://github.com/IsaacInsoll/PICR/commit/5d8d5f0e72a22d93ac8674efa8cb81a1881fafdb)
   was ported with his
   [explicit permission](https://github.com/IsaacInsoll/PICR/issues/81#issuecomment-5113052332).
+- [Olli-Pekka Niskanen](https://github.com/opniskanen) also developed the
+  reusable frontend masonry direction in
+  [PICR PR #82](https://github.com/IsaacInsoll/PICR/pull/82), which informed the
+  maintained package's library-only masonry API. PICR-specific backend,
+  GraphQL, branding, and administration work remain outside this package.
+
+## Maintained Demo Assets
+
+The dog photographs used by the maintained Storybook were photographed and are
+owned by Isaac Insoll. They originate in PICR's test-media collection and were
+provided by him for this documentation. Storybook keeps the original JPEGs for
+the full-resolution viewer example and repository-generated WebP derivatives
+for thumbnails and tiny placeholders.
 
 ## Original Project Credits
 
@@ -68,7 +81,11 @@ The upstream changelog and Git history contain additional contribution details.
 Removing obsolete example and lightbox code does not remove credit for the work
 that shaped the project.
 
-## Original Demo Image Credits
+## Historical Upstream Demo Image Credits
+
+The maintained Storybook does not ship or use these images. This historical
+credit remains because the photographs appeared in the inherited upstream
+documentation and examples.
 
 - [Jeshu John - designerspics.com](https://designerspics.com)
 - [Gratisography](https://gratisography.com)

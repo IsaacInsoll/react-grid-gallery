@@ -1,0 +1,97 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks';
+import * as GalleryStories from './Gallery.stories';
+
+<Meta title="Start/Getting started" />
+
+# Get from install to gallery in minutes
+
+## 1. Install
+
+```sh
+npm install @picr/react-grid-gallery
+```
+
+The package is ESM-only, supports React 18 and 19, and targets modern ES2020
+browsers. Import everything from the package root.
+
+## 2. Describe your images
+
+`width` and `height` are intrinsic dimensions used to calculate either layout;
+they do not need to match the delivered pixel size exactly, but their ratio must
+be correct.
+
+```tsx
+import type { Image } from '@picr/react-grid-gallery';
+
+const images: Image[] = [
+  {
+    src: '/photos/coast.jpg',
+    width: 1600,
+    height: 1067,
+    alt: 'Sunset above a quiet coast',
+  },
+  {
+    src: '/photos/forest.jpg',
+    width: 1200,
+    height: 1600,
+    alt: 'Path through a green forest',
+  },
+];
+```
+
+Most applications already know these values from image metadata, an upload
+pipeline, or an image CDN. Supplying them up front lets the first render have a
+stable layout; avoid loading every image merely to discover its dimensions.
+
+## 3. Render into a container with width
+
+```tsx
+import { Gallery } from '@picr/react-grid-gallery';
+
+export const PhotoGallery = () => (
+  <section aria-label="Recent photographs">
+    <Gallery images={images} enableImageSelection={false} />
+  </section>
+);
+```
+
+<Canvas of={GalleryStories.DefaultGallery} />
+
+## 4. Pick the interaction model deliberately
+
+- Keep the default selection UI and update `isSelected` in `onSelect`.
+- Set `enableImageSelection={false}` for a display-only gallery.
+- Add `href` to image records for native linked tiles.
+- Use `onClick` for a lightbox or router integration; call
+  `event.preventDefault()` when a linked tile should not navigate normally.
+
+Gallery owns none of those application states. It reports the index and your
+typed image record, leaving your app in charge of selection, navigation, and
+viewer state.
+
+That is the complete mental model: your records provide sources, ratios, labels,
+links, and selected state; Gallery measures its container and renders your
+chosen layout; your application responds to callbacks with navigation, viewers,
+and state updates.
+
+## 5. Choose the layout, then tune its target
+
+1. The gallery fills its **container**, not the viewport. A widthless container
+   cannot produce a useful layout.
+2. Justified layout uses `rowHeight`; an overflowing row can shrink
+   proportionally so image edges remain visible.
+3. Masonry layout uses `columnWidth`; Gallery derives the actual responsive
+   column count and width from the container.
+
+```tsx
+<Gallery images={images} layout="justified" rowHeight={180} />
+<Gallery images={images} layout="masonry" columnWidth={180} />
+```
+
+Continue with the
+[Gallery workshop](?path=/docs/examples-gallery-workshop--documentation) to
+compare both algorithms, selection, collection sizes, and a finished viewer in
+one place. [Photo manager](?path=/docs/examples-photo-manager--documentation)
+composes selection, filtering, bulk actions, and a viewer;
+[Troubleshooting](?path=/docs/guides-troubleshooting--documentation) answers the
+failure modes that generated the most questions in the original project.
