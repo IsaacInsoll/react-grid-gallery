@@ -104,7 +104,7 @@ git switch main
 git pull --ff-only
 # Edit CHANGELOG.md.
 npm run release:dry-run -- <version>
-npm run release -- <version>
+npm run release
 ```
 
 The worktree guard fetches `origin/main`, requires local `main` to match it
@@ -113,18 +113,27 @@ update.
 The dry-run preflight validates and prints the exact curated release-note
 section before previewing release-it's write operations. It does not repeat the
 complete release gate. Review that printed text before continuing. The real run
-reuses that preflight and runs `npm run release:check`. It then bumps
-`package.json` and `package-lock.json`, creates the
+prompts only for the version, then reuses that preflight and runs
+`npm run release:check` without additional commit, tag, or push confirmations.
+It then bumps `package.json` and `package-lock.json`, creates the
 `🔖 release v<version>` commit and annotated tag, and atomically pushes both to
 `main` using the maintainer's administrator bypass. If branch protection rejects
 the commit, the tag is not pushed either.
 
-Release-it never publishes to npm. Pushing the tag starts the independent
-trusted-publishing workflow, which validates the final versioned tarball,
-publishes or stages it, and owns GitHub Release creation with a scoped,
-short-lived workflow token. A public GitHub Release must not precede successful
-npm publication; the workflow may use a draft while staged npm approval is
-pending. Do not use administrator bypass for ordinary development work.
+To bypass even the version prompt after reviewing the dry run, pass the version
+explicitly:
+
+```sh
+npm run release -- <version>
+```
+
+Release-it never publishes to npm or creates GitHub Releases. Pushing the tag
+starts the independent trusted-publishing workflow, which validates the final
+versioned tarball, publishes or stages it, and owns GitHub Release creation with
+a scoped, short-lived workflow token. A public GitHub Release must not precede
+successful npm publication; the workflow may use a draft while staged npm
+approval is pending. Do not use administrator bypass for ordinary development
+work.
 
 ## Normal Releases
 

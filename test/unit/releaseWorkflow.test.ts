@@ -1,7 +1,19 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { assertPermittedReleaseStatus } from '../../scripts/check-release-worktree.mjs';
 import { getReleaseMetadata } from '../../scripts/release-metadata.mjs';
 import { assertPublishedPackage } from '../../scripts/verify-published-package.mjs';
+
+const packageManifest = JSON.parse(readFileSync('package.json', 'utf8')) as {
+  scripts: Record<string, string>;
+};
+
+const releaseItConfig = JSON.parse(
+  readFileSync('.release-it.json', 'utf8'),
+) as {
+  github: { release: boolean };
+  npm: { publish: boolean };
+};
 
 describe('release worktree guard', () => {
   it('accepts a clean tracked worktree', () => {
@@ -22,6 +34,17 @@ describe('release worktree guard', () => {
     }).toThrow(
       'clean tracked worktree or exactly one unstaged tracked change: CHANGELOG.md',
     );
+  });
+});
+
+describe('release-it wiring', () => {
+  it('prompts only for the release version during local releases', () => {
+    expect(packageManifest.scripts.release).toBe('release-it --only-version');
+  });
+
+  it('leaves package publishing and GitHub Releases to the release workflow', () => {
+    expect(releaseItConfig.npm.publish).toBe(false);
+    expect(releaseItConfig.github.release).toBe(false);
   });
 });
 

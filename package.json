@@ -34,7 +34,7 @@
     "security:audit": "npm run security:audit:root && npm run security:audit:consumer",
     "security:audit:root": "npm audit --audit-level=high",
     "security:audit:consumer": "npm audit --prefix test/fixtures/packed-consumer --audit-level=high",
-    "release": "release-it",
+    "release": "release-it --only-version",
     "release:dry-run": "node scripts/release-preflight.mjs",
     "release:check": "npm run format:check && npm run lint && npm run typecheck && npm run test:types && npm test && npm run test:consumer && npm run package:check && npm run build-storybook && npm run test:browser:container && npm run security:audit",
     "format": "prettier . --write",
