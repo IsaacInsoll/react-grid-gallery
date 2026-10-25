@@ -86,7 +86,7 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "release-it": "21.0.0",
-    "storybook": "10.5.5",
+    "storybook": "10.6.3",
     "tsdown": "0.22.14",
     "typescript": "6.0.2",
     "typescript-eslint": "8.65.0",
